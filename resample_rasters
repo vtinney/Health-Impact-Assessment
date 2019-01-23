@@ -1,0 +1,54 @@
+#arcmap
+#Band Collection Statistics tool in Spatial Analyst.  It takes rasters as input and can output the correlation matrix (among other statistics).  
+#Just make sure to check the "Compute covariance and correlation matrices" box.
+
+library(sp)
+library(raster)
+library(maptools)
+library(rgdal)
+
+#317, 273
+
+#extent
+#top 37.923140674
+#left-122.542923014
+#right -121.751256347
+#bottom: 37.2398073406
+#resolution 250m
+#coordinates GCS_WGS_1984
+
+
+setwd("C:/Users/Veronica Tinney/Dropbox/")
+
+bayboundary <- raster("C:/Users/Veronica Tinney/Dropbox/EDF_2019/baytif/final/BayArea_Raster.tif")
+lspop15_250 <- raster("C:/Users/Veronica Tinney/Dropbox/EDF_2019/Pop/GHSPop/lspop2015.tif")
+ghspop15_250 <- raster("C:/Users/Veronica Tinney/Dropbox/EDF_2019/Pop/GHSPop/250/ghs15.tif")
+lspop15_1km <- raster("C:/Users/Veronica Tinney/Dropbox/EDF_2019/Pop/GHSPop/1km/lspop2015_1km.tif")
+ghspop15_1km <- raster("C:/Users/Veronica Tinney/Dropbox/EDF_2019/Pop/GHSPop/1km/ghs_1km.tif")
+
+#resample to match extent and resolution (ls match ghs)
+res1 <- resample(lspop15_1km, ghspop15_1km, method="bilinear")
+lspop151_1km2 = res1
+res(lspop151_1km2) == res(ghspop15_1km) #TRUE
+extent(lspop151_1km2) == extent(ghspop15_1km) #TRUE
+
+
+#resample to match extent and resolution (ls match ghs)
+res2 <- resample(lspop15_250, ghspop15_250, method="bilinear")
+lspop15_250_2 = res2
+res(lspop15_250_2) == res(ghspop15_250) #TRUE
+extent(lspop15_250_2) == extent(ghspop15_250) #TRUE
+
+#reproject no value -3.40282306074e+38
+values(ghspop15_250)[values(ghspop15_250) < 0] = NA
+values(ghspop15_1km)[values(ghspop15_1km) < 0] = NA
+
+#lspop novalue -2147483647
+values(lspop15_250_2)[values(lspop15_250_2) < 0] = NA
+values(lspop151_1km2)[values(lspop151_1km2) < 0] = NA
+
+writeRaster(ghspop15_250, filename="ghspop15_250.tif", format="GTiff",overwrite=TRUE)
+writeRaster(ghspop15_1km, filename="ghspop15_1km.tif", format="GTiff",overwrite=TRUE)
+
+writeRaster(lspop15_250_2, filename="lspop2015_250.tif", format="GTiff",overwrite=TRUE)
+writeRaster(lspop151_1km2, filename="lspop2015_250.tif", format="GTiff",overwrite=TRUE)

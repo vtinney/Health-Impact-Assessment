@@ -12,7 +12,6 @@ r <- raster()
 crs(r) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 res(r) <- 0.0025
 extent(r) <- c(-122.5306, -121.757, 37.25072, 37.90582)
-BA.raster <- rasterize(sp_df, r, fum=sum)
-
+BA.raster <- rasterize(sp_df, r)
 writeRaster(BA.raster, filename="BA.raster.tif", format="GTiff",overwrite=TRUE)
 

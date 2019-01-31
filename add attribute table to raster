@@ -1,0 +1,38 @@
+#2019-1-30
+#Merge attribute table with raster file in R
+#Prior to this, I loaded the Bayarea Shape file in ArcMap, and rasterized at a 100m and 250m resolution
+#By rasterizing the polygon at 100m resolution, this kept all 545 data lines from the ACS
+#I was then able to export the raster at a resolution fo 250m and keep all the data
+#the .vat.dbf is the attribute file exported from ArcMap along with the raster file, which I then put back into R
+#the result is a raster file that has the attribute data in the dataframe
+
+library(raster)
+library(maptools)
+library(rgeos)
+library(rgdal)
+library(foreign)# for loading DBF
+
+setwd("C:/Users/Veronica Tinney/Dropbox/EDF_2019/baytif")
+
+#Load raster
+r <- raster('BayAreaFINAL250.tif')
+
+#Load Data attribute file (DBF)
+data <- read.dbf("BayAreaFINAL250.tif.vat.dbf")
+
+#Create the attributes
+ratify(r)
+
+#rename DBF dataframe so it matches the first column of the raster attribtues
+colnames(data)[1] <- "ID"
+
+#set the levels on the raster equal to the dbf dataframe
+levels(r) <- data
+
+#the tif files were not maintaining the data, so I kept this as the grd format
+writeRaster(r, filename="raster_rat.grd")
+
+#read back in to verify
+r2 <- raster("raster_rat.grd")
+r2
+

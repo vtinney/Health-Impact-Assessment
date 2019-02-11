@@ -1,0 +1,53 @@
+
+setwd("C:/Users/vtinney/Dropbox/EDF_shared/Rates/CHIS")
+
+library(RCurl)
+library(rjson)
+library(jsonlite)
+library(httr)
+library(jsonlite)
+library(lubridate)
+options(stringsAsFactors = FALSE)
+
+#JSON with pediatric asthma rates CHIS 2014
+asthmaa <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMAA?geotype=zcta&dataSetId=14")
+data_asthmaa <- fromJSON(asthmaa, flatten = TRUE)
+df <- do.call(rbind.data.frame, data_asthmaa$geographies)
+
+df <- as.data.frame(df, row.names=NULL)
+is.data.frame(df)
+
+#export dataframe to txt file
+options(max.print=999999)
+sink("asthmaa.txt")
+print(df)
+sink()
+
+#JSON for adult asthma CHIS 2014
+asthmac <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMATC?geotype=zcta&dataSetId=14")
+data_asthmac <- fromJSON(asthmac, flatten = TRUE)
+df2 <- do.call(rbind.data.frame, data_asthmac$geographies)
+
+df2 <- as.data.frame(df2, row.names=NULL)
+is.data.frame(df2)
+
+options(max.print=999999)
+sink("asthmac.txt")
+print(df2)
+sink()
+
+heartd <- getURL("http://api.chis.ucla.edu/NE/api/variable/HEARTDA?geotype=zcta&dataSetId=14")
+data_heartd <- fromJSON(heartd, flatten = TRUE)
+df3 <- do.call(rbind.data.frame, data_heartd$geographies)
+
+df3 <- as.data.frame(df3, row.names=NULL)
+is.data.frame(df3)
+
+options(max.print=999999)
+sink("heartd.txt")
+print(df3)
+sink()
+
+
+
+

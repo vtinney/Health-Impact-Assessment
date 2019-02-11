@@ -1,0 +1,12 @@
+library(base)
+
+setwd("C:/Users/vtinney/Desktop")
+
+airpollutionlist <- read.table("C:/Users/vtinney/Desktop/airpollutionlist.txt", quote="\"", comment.char=""
+cardio <- read.table("C:/Users/vtinney/Desktop/cardio.txt", quote="\"", comment.char="")
+                               
+list1 <- airpollutionlist$V1[1:1117]
+list2 <- cardio$V1[1:978102]
+
+lookup <- intersect(list1, list2)
+lookup

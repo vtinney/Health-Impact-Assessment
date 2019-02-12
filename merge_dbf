@@ -1,0 +1,40 @@
+library(rgdal)
+library(maptools)
+library(raster)
+library(foreign)# for loading DBF
+library(reshape)
+
+setwd("C:/Users/Veronica Tinney/Documents/")
+
+#Load raster and set projection
+r <- raster("updated_rates_PolygonToRaste101.tif")
+crs(r) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+ratify(r)
+
+#read in first DBF file
+data <- read.dbf("updated_rates_PolygonToRaste101.tif.vat.dbf")
+
+#read in second DBF file
+library(readxl)
+rates <- read_excel("C:/Users/vtinney/Dropbox/EDF_shared/Input Rasters/zipcode_rates.xlsx")
+class(rates)
+df <- as.data.frame(rates)
+class(df)
+write.dbf(as.data.frame(df), "test.dbf")
+data2 <- read.dbf('test.dbf')
+
+#merge DBF files
+merged.files <- merge_recurse(list(data,data2))
+
+#create first column with ID
+colnames(data2)[1] <- "ID"
+
+#assign levels from attribute table to raster
+levels(r) <- merged.files
+
+#export raster while keeping attribute table
+writeRaster(r, filename="raster_rates.grd")
+
+#confirm that attribute table is still associated with raster file
+r2 <- raster("raster_rat.grd")
+r2

@@ -33,6 +33,10 @@ levels(r) <- data
 writeRaster(r, filename="raster_rat.grd")
 
 #read back in to verify
-r2 <- raster("raster_rat.grd")
+r2 <- raster("raster_rates.grd")
 r2
+
+#get all column names
+vat <- levels(r)
+head( vat[[1]])
 

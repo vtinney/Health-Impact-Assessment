@@ -1,0 +1,18 @@
+library(raster)
+library(rgdal)
+setwd('/home/vtinney/')
+
+#between 250m rasters
+rastFiles<- list.files(pattern="tif")
+a<-stack(rastFiles)
+jnk=layerStats(a, 'pearson', na.rm=T)
+corr_matrix=jnk$'pearson correlation coefficient'
+corr_matrix
+
+#between 1km rasters
+setwd('/groups/anenberggrp/VAS/lspop15_ghspop_15/corr/')
+rastFiles2<- list.files(pattern="tif")
+b<-stack(rastFiles2)
+jnk2=layerStats(b, 'pearson', na.rm=T)
+corr_matrix1km=jnk2$'pearson correlation coefficient'
+corr_matrix1km

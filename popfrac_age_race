@@ -1,0 +1,17 @@
+library(raster)
+library(maptools)
+library(rgdal)
+
+gpw1_4 <- raster('/groups/anenberggrp/shared.data/population/CIESIN/30arcsec/2010/agf/2010_fpop_1-4.tif')
+gpw5_9 <- raster('/groups/anenberggrp/shared.data/population/CIESIN/30arcsec/2010/agf/2010_fpop_5-9.tif')
+gpw10_15 <- raster('/groups/anenberggrp/shared.data/population/CIESIN/30arcsec/2010/agf/2010_fpop_10-14.tif')
+
+extent(gpw0_4) <- c(-122.5306, -121.757, 37.25072, 37.90582)
+extent(gpw5_9) <- c(-122.5306, -121.757, 37.25072, 37.90582)
+extent(gpw10_15) <- c(-122.5306, -121.757, 37.25072, 37.90582)
+
+setwd('/home/vtinney/CIESEN/')
+
+writeRaster(gpw0_4, filename="gpw0_4.tif", format="GTiff",overwrite=TRUE)
+writeRaster(gpw5_9, filename="gpw5_9.tif", format="GTiff",overwrite=TRUE)
+writeRaster(gpw10_15, filename="gpw10_15.tif", format="GTiff",overwrite=TRUE)

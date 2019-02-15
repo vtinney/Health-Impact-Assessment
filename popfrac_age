@@ -1,0 +1,16 @@
+setwd('/home/vtinney/CIESEN/')
+
+library(raster)
+library(maptools)
+library(rgdal)
+
+poptot <- raster('poptot.tif')
+
+all_my_rasts <- stack("0_4.tif", "5_9.tif", "10_14.tif", "15_19.tif", "20_24.tif", "25_29.tif", "30_34.tif",
+                      "35_39.tif", "40_44.tif", "45_49.tif", "50_54.tif", "55_59.tif", "60_64.tif", "65_69.tif",
+                      "70_74.tif", "75_79.tif", "80_84.tif")
+
+
+popfrac <- overlay(all_my_rasts, poptot, fun=function(r1, r2){return(r1/r2)})
+
+writeRaster(popfrac, filename="popfrac.tif", format="GTiff", overwrite=TRUE)

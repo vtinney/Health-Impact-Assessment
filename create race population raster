@@ -8,30 +8,53 @@
 # value for the raster file indicates the CBP number for total count race in 546 CBG in the bay area
 # Race data counts from the ACS, 2016
 
-setwd("C:/Users/vtinney/Dropbox/EDF_2019/")
-
 library(raster)
 library(rgdal)
 library(maptools)
 library(rgeos)
 library(foreign)
 
+etwd("~/transer")
 
 # Read in race/ethnicity rasters
-totalrace <- raster('total2.tif')
+totalrace <- raster('total.tif')
 white <- raster('white.tif')
 black <- raster('black.tif')
-ai <- raster('ai.tif')
-nativehaw <- raster('nativehawaii1.tif')
-asian <- raster('asian1.tif')
+ai <- raster('american_indian.tif')
+nativehaw <- raster('nativehawaii.tif')
+asian <- raster('asian.tif')
 other <- raster('other.tif')
-hispanic <- raster('hisp.tif')
+hispanic <- raster('hispanic.tif')
+
+#change projection
+crs(totalrace) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(white) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(black) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(ai) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(nativehaw) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(asian) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(other) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+crs(hispanic) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+
+#Write raster with new projection
+writeRaster(totalrace, filename="total2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ai, filename="american_indian2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(white, filename="white2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(black, filename="black2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(other, filename="other2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(asian, filename="asian2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(nativehaw, filename="nativehawaii2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(hispanic, filename="hispanic2.tif", format="GTiff", overwrite=TRUE)
 
 #Stack all race rasters
-race_stack <- stack('white.tif', 'black.tif', 'ai.tif', 'nativehawaii1.tif', 'asian1.tif','hisp.tif', 'other.tif')
+race_stack <- stack('white2.tif', 'black2.tif', 'american_indian2.tif', 'nativehawaii2.tif', 'asian2.tif','hispanic2.tif', 'other2.tif')
 names(race_stack) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
-race_frac <- race_stack / total
+race_frac <- race_stack / totalrace
 names(race_frac) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
+
+#import LandScan Data
+setwd("C:/Users/vtinney/Dropbox/EDF_2019/Population/LandScan")
+conus <- raster('CONUS2017.tif')
 
 #Resample such that LandScan and Population fraction are on the same resolution
 resample_race_frac <- resample(race_frac, conus, method='bilinear')
@@ -43,8 +66,11 @@ conus_race_frac <- resample_race_frac * conus
 conus_race_frac
 names(conus_race_frac) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
 
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/Race")
+
 #write all tifs
-writeRaster(race_stack, filename="all_race_count.tif", format="GTiff", overwrite=TRUE)
-writeRaster(race_frac, filename="race_frac.tif", format="GTiff", overwrite=TRUE)
-writeRaster(conus_race_frac, filename="conus_race.tif", format="GTiff", overwrite=TRUE)
+writeRaster(race_stack, filename="all_race_count2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(race_frac, filename="race_frac2.tif", format="GTiff", overwrite=TRUE)
+writeRaster(conus_race_frac, filename="conus_race2.tif", format="GTiff", overwrite=TRUE)
+
 

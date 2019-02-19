@@ -14,9 +14,11 @@ library(maptools)
 library(rgeos)
 library(foreign)
 
-etwd("~/transer")
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/Race/individ")
 
 # Read in race/ethnicity rasters
+
+totalrace <- raster('total2.tif')
 totalrace <- raster('total.tif')
 white <- raster('white.tif')
 black <- raster('black.tif')
@@ -69,8 +71,6 @@ names(conus_race_frac) <- c('white', 'black', 'american_indian', 'native_hawaii'
 setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/Race")
 
 #write all tifs
-writeRaster(race_stack, filename="all_race_count2.tif", format="GTiff", overwrite=TRUE)
-writeRaster(race_frac, filename="race_frac2.tif", format="GTiff", overwrite=TRUE)
-writeRaster(conus_race_frac, filename="conus_race2.tif", format="GTiff", overwrite=TRUE)
-
-
+writeRaster(race_stack, filename="all_race_count3.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(race_frac, filename="race_frac3.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(conus_race_frac, filename="conus_race3.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)

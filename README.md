@@ -1,8 +1,6 @@
-## Welcome to GitHub Pages
+## Health Impact Assessment
 
-You can use the [editor on GitHub](https://github.com/vtinney/PM2.5_HIA/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This site provides a step by step to performing a health impact assessment of the health burden attributable to air pollution, using R.
 
 ### Markdown
 

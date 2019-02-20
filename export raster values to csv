@@ -1,3 +1,5 @@
+# This takes raster files, stacks them, and then exports all values to CSV, while adding lat/lon values
+
 
 library(raster)
 library(maptools)

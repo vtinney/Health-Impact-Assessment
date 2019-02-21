@@ -2,9 +2,11 @@
 
 This site provides a step by step to performing a health impact assessment of the health burden attributable to air pollution, using R.
 
-### Markdown
+### HIA Steps
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+This page will review formatting data and importing it into R. I also often use ArcMap for easy visualization that my programs have worked.
+
+HIA relies on the following inputs: population; rate of the health endpoint of interest; 
 
 ```markdown
 Syntax highlighted code block

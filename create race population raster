@@ -8,25 +8,29 @@
 # value for the raster file indicates the CBP number for total count race in 546 CBG in the bay area
 # Race data counts from the ACS, 2016
 
+sp_df <- readOGR(dsn=getwd(), layer = 'Bay_area_full')
+
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/Race/Rasters_Bayarea_all/")
+
+
 library(raster)
 library(rgdal)
 library(maptools)
 library(rgeos)
 library(foreign)
 
-setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/Race/individ")
+
 
 # Read in race/ethnicity rasters
 
-totalrace <- raster('total2.tif')
 totalrace <- raster('total.tif')
-white <- raster('white.tif')
-black <- raster('black.tif')
-ai <- raster('american_indian.tif')
-nativehaw <- raster('nativehawaii.tif')
-asian <- raster('asian.tif')
-other <- raster('other.tif')
-hispanic <- raster('hispanic.tif')
+white <- raster('white_ba.tif')
+black <- raster('black_ba.tif')
+ai <- raster('ai_ba.tif')
+nativehaw <- raster('native_hawaii_ba.tif')
+asian <- raster('asian_ba.tif')
+other <- raster('other_ba.tif')
+hispanic <- raster('hispanic_ba.tif')
 
 #change projection
 crs(totalrace) <- "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"

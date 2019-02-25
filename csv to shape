@@ -1,0 +1,145 @@
+#Convert csv point files to Shape files
+#have not fully tested this to make sure it works 2019-2-25
+
+library(raster)
+library(maptools)
+library(rgdal)
+library(sp)
+library(spatialEco)
+library(rgeos)
+require(sf)
+
+#Read in Shapefile for Bayarea
+
+setwd('/home/vtinney/CIESEN/')
+sp_df <- readOGR(dsn ="BA_Shape", layer = "Bay_area_full") #read in shapefile
+sp_df2<-spTransform(sp_df,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+################################################################################
+# LS RACE
+
+setwd('/home/vtinney/pop/race_frac/All_BA/Rasters_Bayarea_all/ls_race_ba/')
+#Read in csv with exported raster values
+ls_race <- read.csv(file="Ls_race_ba.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(ls_race)
+names(ls_race) <- c('ID', 'american_indian', 'asian', 'black', 'hispanic', 'native_hawaii',
+                      'other', 'white', 'x', 'y')
+WGScoor<-  ls_race
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "LS_race_BA.shp", overwrite=TRUE)
+
+################################################################################
+#Race count
+
+setwd('/home/vtinney/pop/race_frac/All_BA/Rasters_Bayarea_all/race_count_ba/')
+#Read in csv with exported raster values
+race_count <- read.csv(file="race_count_ba.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(race_count)
+names(race_count) <- c('ID', 'american_indian', 'asian', 'black', 'hispanic', 'native_hawaii',
+                      'other', 'white', 'x', 'y')
+WGScoor<-  race_count
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "race_count_ba.shp")
+
+################################################################################
+#Race frac
+
+setwd('/home/vtinney/pop/race_frac/All_BA/Rasters_Bayarea_all/race_frac_ba/')
+#Read in csv with exported raster values
+race_frac <- read.csv(file="race_frac_BA.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(race_frac)
+names(race_frac) <- c('ID', 'american_indian', 'asian', 'black', 'hispanic', 'native_hawaii',
+                      'other', 'white', 'x', 'y')
+WGScoor<-  race_frac
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "race_frac_ba.shp", overwrite=TRUE)
+
+
+################################################################################
+#Age ls
+
+setwd('/home/vtinney/pop/age_frac/All_BA/ls_age/')
+#Read in csv with exported raster values
+ls_age <- read.csv(file="ls_age_BA.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(ls_age)
+names(ls_age) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
+
+WGScoor<-  ls_age
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "ls_age_ba.shp", overwrite=TRUE)
+
+################################################################################
+#age count
+
+
+setwd('/home/vtinney/pop/age_frac/All_BA/pop_count/')
+#Read in csv with exported raster values
+age_count <- read.csv(file="age_count_BA.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(age_count)
+names(age_count) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
+
+WGScoor<-  age_count
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "age_count_ba.shp")
+
+################################################################################
+#age frac
+
+
+setwd('/home/vtinney/pop/age_frac/All_BA/pop_frac/')
+#Read in csv with exported raster values
+age_frac <- read.csv(file="age_frac_BA.csv", header=TRUE, sep=",")
+
+#Set as data frame
+as.data.frame(age_frac)
+names(age_frac) <- c('white', 'black', 'american_indian', 'native_hawaii', 'asian', 'hispanic', 'other')
+
+WGScoor<-  age_frac
+
+coordinates(WGScoor)=~x+y
+proj4string(WGScoor) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+LLcoor<-spTransform(WGScoor,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+raster::shapefile(LLcoor, "age_frac_ba.shp")
+
+
+
+
+
+

@@ -1,0 +1,21 @@
+setwd("C:/Users/vtinney/Desktop/Counties/")
+require(rgdal)
+
+BA9 <- readOGR(".", "tl_2016_us_county")
+counties9 <- BA9
+BA9 <- subset(counties, NAME=="Contra Costa" | NAME=="Alameda" | NAME=="Marin" | NAME=="Napa" | 
+                  NAME=="San Francisco" | NAME=="San Mateo" | NAME=="Santa Clara" | NAME=="Solano" | NAME=="Sonoma")
+
+proj4string(BA9) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+LLcoor<-spTransform(BA9,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+
+BA12 <- subset(counties, NAME=="Contra Costa" | NAME=="Alameda" | NAME=="Marin" | NAME=="Napa" | 
+                 NAME=="San Francisco" | NAME=="San Mateo" | NAME=="Santa Clara" | NAME=="Solano" | 
+                 NAME=="Sonoma" | NAME=="San Benito" | NAME=="San Joaquin" | NAME=="Santa Cruz")
+
+proj4string(BA12) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+LLcoor2<-spTransform(BA12,CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+writeOGR(LLcoor, dsn=getwd(), layer="BA9", driver="ESRI Shapefile")
+writeOGR(LLcoor2, dsn=getwd(), layer="BA12", driver="ESRI Shapefile")

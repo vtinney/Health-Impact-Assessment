@@ -21,7 +21,7 @@
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" > </iframe>
 
 ### Asthma ER visits - All
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" />
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" > </iframe>
 
 
 ## CHIS 2014
@@ -43,4 +43,4 @@
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" > </iframe>
 
 ### Asthma - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" /> 
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > </iframe>

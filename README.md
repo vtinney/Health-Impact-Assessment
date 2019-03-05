@@ -1,8 +1,5 @@
 # Health Impact Assessment Maps
 
-```
-<iframe src="https://rpubs.com/vatsouth/473428" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
-
-```
-[Contribution guidelines for this project](Health-Impact-Assessment/Adult Asthma ER visits.html)
+<blockquote class="embedly-card"><h4><a href="https://rpubs.com/vatsouth/473428">RPubs - Heart Disease</a></h4><p>null</p></blockquote>
+<script async src="//cdn.embedly.com/widgets/platform.js" charset="UTF-8"></script>
       

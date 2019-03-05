@@ -37,10 +37,10 @@
 
 
 ### Heart Disease
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473428" >
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473428" > </iframe>
  
 ### Asthma - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" > 
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" > </iframe>
 
 ### Asthma - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > 
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" /> 

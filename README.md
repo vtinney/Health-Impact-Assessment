@@ -15,13 +15,13 @@
   * Database: LGHC Indicators
 
 ### Asthma ER visits - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" > </frame>
 
 ### Asthma ER visits - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" > </frame>
 
 ### Asthma ER visits - All
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" > </frame>
 
 
 ## CHIS 2014
@@ -37,10 +37,10 @@
 
 
 ### Heart Disease
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473428" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473428" > </frame>
 
 ### Asthma - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" > </frame>
 
 ### Asthma - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" ></frame>
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > </frame>

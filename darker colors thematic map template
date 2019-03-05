@@ -1,0 +1,163 @@
+library(geojsonio)
+library(broom)
+
+knitr::opts_chunk$set(
+  out.width = "100%",
+  dpi = 300,
+  fig.width = 8,
+  fig.height = 6,
+  fig.path = 'https://timogrossenbacher.ch/wp-content/uploads/2016/12/tm-',
+  strip.white = T,
+  dev = "png",
+  dev.args = list(png = list(bg = "transparent"))
+)
+
+remove(list = ls(all.names = TRUE))
+
+detachAllPackages <- function() {
+  basic.packages.blank <-  c("stats", 
+                             "graphics", 
+                             "grDevices", 
+                             "utils", 
+                             "datasets", 
+                             "methods", 
+                             "base")
+  basic.packages <- paste("package:", basic.packages.blank, sep = "")
+  
+  package.list <- search()[ifelse(unlist(gregexpr("package:", search())) == 1, 
+                                  TRUE, 
+                                  FALSE)]
+  
+  package.list <- setdiff(package.list, basic.packages)
+  
+  if (length(package.list) > 0)  for (package in package.list) {
+    detach(package, character.only = TRUE)
+    print(paste("package ", package, " detached", sep = ""))
+  }
+}
+
+detachAllPackages()
+
+
+if (!require(rgeos)) {
+  install.packages("rgeos", repos = "http://cran.us.r-project.org")
+  require(rgeos)
+}
+if (!require(rgdal)) {
+  install.packages("rgdal", repos = "http://cran.us.r-project.org")
+  require(rgdal)
+}
+if (!require(raster)) {
+  install.packages("raster", repos = "http://cran.us.r-project.org")
+  require(raster)
+}
+if(!require(ggplot2)) {
+  install.packages("ggplot2", repos="http://cloud.r-project.org")
+  require(ggplot2)
+}
+if(!require(viridis)) {
+  install.packages("viridis", repos="http://cloud.r-project.org")
+  require(viridis)
+}
+if(!require(dplyr)) {
+  install.packages("dplyr", repos = "https://cloud.r-project.org/")
+  require(dplyr)
+}
+if(!require(gtable)) {
+  install.packages("gtable", repos = "https://cloud.r-project.org/")
+  require(gtable)
+}
+if(!require(grid)) {
+  install.packages("grid", repos = "https://cloud.r-project.org/")
+  require(grid)
+}
+if(!require(readxl)) {
+  install.packages("readxl", repos = "https://cloud.r-project.org/")
+  require(readxl)
+}
+if(!require(magrittr)) {
+  install.packages("magrittr", repos = "https://cloud.r-project.org/")
+  require(magrittr)
+}
+
+#import csv data file
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Rates/Excel/CHIS/")
+data <- read.csv('asthmaa.csv')
+
+#import shape file
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Population/BA_Shape/bay/")
+zip <- readOGR(dsn=getwd(), layer = "BA_zip")
+
+#fortify data for ggplot
+map_data_fortified <- fortify(zip, region = "ZCTA5CE10") %>% 
+  mutate(id = as.numeric(id))
+
+#link spatial data
+map_data <- map_data_fortified %>% left_join(data, by = c("id" = "ZCTA5CE10"))
+
+
+# Darker colors
+# Discrete breaks
+pretty_breaks <- c(0.114,0.135,0.154,0.164,0.183)
+# find the extremes
+minVal <- min(map_data$Comb_Est, na.rm = T)
+maxVal <- max(map_data$Comb_Est, na.rm = T)
+# compute labels
+labels <- c()
+brks <- c(minVal, pretty_breaks, maxVal)
+# round the labels (actually, only the extremes)
+for(idx in 1:length(brks)){
+  labels <- c(labels,round(brks[idx + 1], 2))
+}
+
+labels <- labels[1:length(labels)-1]
+# define a new variable on the data set just as above
+map_data$brks <- cut(map_data$Comb_Est, 
+                     breaks = brks, 
+                     include.lowest = TRUE, 
+                     labels = labels)
+
+brks_scale <- levels(map_data$brks)
+labels_scale <- rev(brks_scale)
+
+p <- ggplot() +
+  # municipality polygons
+  geom_polygon(data = map_data, aes(fill = Comb_Est, 
+                                    x = long, 
+                                    y = lat, 
+                                    group = group)) +
+  # municipality outline
+  geom_path(data = map_data, aes(x = long, 
+                                 y = lat, 
+                                 group = group), 
+            color = "white", size = 0.1) +
+  coord_equal() +
+  theme_void() +
+  scale_fill_viridis(breaks=c(0.114,0.135,0.154,0.164,0.183), name="Rate per 100", guide = guide_legend(
+    direction = "horizontal",
+    keyheight = unit(2, units = "mm"),
+    keywidth = unit(70/length(labels), units = "mm"),
+    title.position = 'top',
+    title.hjust = 0.5,
+    label.hjust = 1,
+    nrow = 1,
+    byrow = T,
+    reverse = T,
+    label.position = "bottom" )) +
+  labs(
+    title = "Adult Asthma Prevalence Rate",
+    subtitle = "2014", 
+    caption = "CHIS, 2014"
+  ) +
+  theme(
+    text = element_text(family="Cambria", color = "#22211d"), 
+    plot.background = element_rect(fill = "#f5f5f2", color = NA), 
+    panel.background = element_rect(fill = "#f5f5f2", color = NA), 
+    legend.background = element_rect(fill = "#f5f5f2", color = NA),
+    
+    plot.title = element_text(family="Cambria", size= 14, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.4, l = 2, unit = "cm")),
+    plot.subtitle = element_text(family="Cambria", size= 10, hjust=0.01, color = "#4e4d47", margin = margin(b = -0.1, t = 0.43, l = 2, unit = "cm")),
+    plot.caption = element_text(family="Cambria", size=8, color = "#4e4d47", margin = margin(b = 0.3, r=-99, unit = "cm") ),
+    
+    legend.position = c(0.5, 0.01)
+  )

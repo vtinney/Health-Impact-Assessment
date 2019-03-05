@@ -1,9 +1,9 @@
 
-# Input Rates
+# Input Rates HIA
 
 ### March 5 2019
 
-# OSHPD 2016
+##  OSHPD 2016
 
 * Zip code: California Environmental Health Tracking Program (CEHTP)
   * Asthma ER visits <18 (pediatric)
@@ -14,17 +14,17 @@
   * County Asthma ED Visit Rates
   * Database: LGHC Indicators
 
-## Asthma ER visits - Pediatric
+### Asthma ER visits - Pediatric
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473353" />
 
-## Asthma ER visits - Adult
+### Asthma ER visits - Adult
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473354" />
 
-## Asthma ER visits - All
+### Asthma ER visits - All
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473355" />
 
 
-# CHIS 2014
+## CHIS 2014
 
 * AskCHIS Neighborhood Edition
 * Output files:
@@ -36,11 +36,11 @@
   * Missing: county (same database)
 
 
-## Heart Disease
+### Heart Disease
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473428" />
 
-## Asthma - Pediatric
+### Asthma - Pediatric
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473426" />
 
-## Asthma - Adult
+### Asthma - Adult
 <iframe align = "center" width = "800" height = "800" src="https://rpubs.com/vatsouth/473427" />

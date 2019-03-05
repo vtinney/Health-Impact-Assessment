@@ -15,10 +15,10 @@
   * Database: LGHC Indicators
 
 ### Asthma ER visits - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" />
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" /iframe>
 
 ### Asthma ER visits - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" />
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" /iframe>
 
 ### Asthma ER visits - All
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" />

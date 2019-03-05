@@ -14,16 +14,6 @@
   * County Asthma ED Visit Rates
   * Database: LGHC Indicators
 
-### Asthma ER visits - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" > </iframe>
-
-### Asthma ER visits - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" > </iframe>
-
-### Asthma ER visits - All
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" > </iframe>
-
-
 ## CHIS 2014
 
 * AskCHIS Neighborhood Edition
@@ -35,6 +25,14 @@
 * Resolution: zip code
   * Missing: county (same database)
 
+### Asthma ER visits - Pediatric
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" > </iframe>
+
+### Asthma ER visits - Adult
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" > </iframe>
+
+### Asthma ER visits - All
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" > </iframe>
 
 ### Heart Disease
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473428" > </iframe>

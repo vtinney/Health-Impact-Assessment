@@ -42,3 +42,14 @@
 
 ### Asthma - Adult
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > </iframe>
+
+### Stroke Mortality
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/476271" > </iframe>
+
+### CVD Mortality
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/476270" > </iframe>
+
+### All-cause Mortality
+<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/476270" > </iframe>
+
+

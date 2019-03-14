@@ -43,6 +43,17 @@
 ### Asthma - Adult
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > </iframe>
 
+
+##  OSHPD 2016
+
+* Leading Causes of Death by ZIP Code
+  * CVD Mortality
+  * Stroke Mortality
+  * All-cause mortality
+* Resolution: Zip code
+  * Missing:
+  * County Data CDC Wonder, 2016
+
 ### Stroke Mortality
 <iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/476271" > </iframe>
 

@@ -1,0 +1,191 @@
+#VTinney 2019-2-22
+
+setwd('/home/vtinney/CIESEN/')
+library(raster)
+library(maptools)
+library(rgdal)
+
+#import original age group rasters from GPW
+gpw0_4 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a000_004bt_2010_cntm_30_sec.tif')
+gpw5_9 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a005_009bt_2010_cntm_30_sec.tif')
+gpw10_14 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a010_014bt_2010_cntm_30_sec.tif')
+gpw15_19 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a015_019bt_2010_cntm_30_sec.tif')
+gpw20_24 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a020_024bt_2010_cntm_30_sec.tif')
+gpw25_29 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a025_029bt_2010_cntm_30_sec.tif')
+gpw30_34 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a030_034bt_2010_cntm_30_sec.tif')
+gpw35_39 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a035_039bt_2010_cntm_30_sec.tif')
+gpw40_44 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a040_044bt_2010_cntm_30_sec.tif')
+gpw45_49 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a045_049bt_2010_cntm_30_sec.tif')
+gpw50_54 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a050_054bt_2010_cntm_30_sec.tif')
+gpw55_59 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a055_059bt_2010_cntm_30_sec.tif')
+gpw60_64 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a060_064bt_2010_cntm_30_sec.tif')
+gpw65_69 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a065_069bt_2010_cntm_30_sec.tif')
+gpw70_74 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a070_074bt_2010_cntm_30_sec.tif')
+gpw75_79 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a075_079bt_2010_cntm_30_sec.tif')
+gpw80_84 <- raster('GPW_Full/gpw_v4_basic_demographic_characteristics_rev10_a080_084bt_2010_cntm_30_sec.tif')
+
+#import GPW population total raster
+poptot <- raster('GPW_total/gpw_v4_population_count_rev10_2010_30_sec.tif')
+
+#import shapefile of bay area extent
+setwd('/home/vtinney/CIESEN/BA_Shape/')
+sp_df <- readOGR(dsn =getwd(), layer = "BA_9_1984")
+
+#crop the rasters to the bay area shapefile
+ba_gpw0_4 <- crop(x=gpw0_4, y=sp_df)
+ba_gpw5_9 <- crop(x=gpw5_9, y=sp_df)
+ba_gpw10_14 <- crop(x=gpw10_14, y=sp_df)
+ba_gpw15_19 <- crop(x=gpw15_19, y=sp_df)
+ba_gpw20_24 <- crop(x=gpw20_24, y=sp_df)
+ba_gpw25_29 <- crop(x=gpw25_29, y=sp_df)
+ba_gpw30_34 <- crop(x=gpw30_34, y=sp_df)
+ba_gpw35_39 <- crop(x=gpw35_39, y=sp_df)
+ba_gpw40_44 <- crop(x=gpw40_44, y=sp_df)
+ba_gpw45_49 <- crop(x=gpw45_49, y=sp_df)
+ba_gpw50_54 <- crop(x=gpw50_54, y=sp_df)
+ba_gpw55_59 <- crop(x=gpw55_59, y=sp_df)
+ba_gpw60_64 <- crop(x=gpw60_64, y=sp_df)
+ba_gpw65_69 <- crop(x=gpw65_69, y=sp_df)
+ba_gpw70_74 <- crop(x=gpw70_74, y=sp_df)
+ba_gpw75_79 <- crop(x=gpw75_79, y=sp_df)
+ba_gpw80_84 <- crop(x=gpw80_84, y=sp_df)
+
+ba_pop_tot <- crop(x=poptot, y=sp_df)
+
+#write all rasters
+setwd('/home/vtinney/CIESEN/')
+writeRaster(ba_gpw0_4, filename="0_4.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw5_9, filename="5_9.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw10_14, filename="10_14.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw15_19, filename="15_19.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw20_24, filename="20_24.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw25_29, filename="25_29.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw30_34, filename="30_34.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw35_39, filename="35_39.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw40_44, filename="40_44.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw45_49, filename="45_49.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw50_54, filename="50_54.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw55_59, filename="55_59.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw60_64, filename="60_64.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw65_69, filename="65_69.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw70_74, filename="70_74.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw75_79, filename="75_79.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_gpw80_84, filename="80_84.tif", format="GTiff", overwrite=TRUE)
+writeRaster(ba_pop_tot, filename="ba_pop_tot.tif", format="GTiff", overwrite=TRUE)
+
+#import all rasters and stack for 17 layer raster file
+all_my_rasts <- stack("0_4.tif", "5_9.tif", "10_14.tif", "15_19.tif", "20_24.tif", "25_29.tif", "30_34.tif",
+                      "35_39.tif", "40_44.tif", "45_49.tif", "50_54.tif", "55_59.tif", "60_64.tif", "65_69.tif",
+                      "70_74.tif", "75_79.tif", "80_84.tif")
+
+#create population fraction by dividing raster stack by the gpw population total
+pop_frac <- all_my_rasts / ba_pop_tot
+
+#import LandScan raster
+setwd('/home/vtinney/')
+day <- raster('pop/LandScan/DAY_BA.tif')
+night <- raster('pop/LandScan/NIGHT_BA.tif')
+
+#Resample such that LandScan and Population fraction are on the same resolution
+resample_pop_frac_day <- resample(pop_frac, day, method='bilinear')
+resample_pop_frac_night <- resample(pop_frac, night, method='bilinear')
+
+#Multiple population fraction by the original population counts in LandScan
+conus_pop_frac_day <- resample_pop_frac_day * day
+conus_pop_frac_night <- resample_pop_frac_day * night
+
+#Label layer names with age groups
+names(conus_pop_frac_day) <- c('0_4', '5_9', '10_14', '15_19', '20_24', '25_29', '30_34', '35_39', '40_44', '45_49', 
+                               '50_54', '55_59', '60_64', '65_69', '70_74', '75_79', '80_84')
+
+names(conus_pop_frac_night) <- c('0_4', '5_9', '10_14', '15_19', '20_24', '25_29', '30_34', '35_39', '40_44', '45_49', 
+                                 '50_54', '55_59', '60_64', '65_69', '70_74', '75_79', '80_84')
+
+#write out both rasters
+writeRaster(all_my_rasts, filename="allages_pop_total.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(pop_frac, filename='all_pop_frac.tif', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+
+#Write out raster. This will be the population dataset for subsample analysis
+setwd('/home/vtinney/')
+writeRaster(all_my_rasts, filename="allages_pop_total.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(pop_frac, filename='all_pop_frac.tif', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(conus_pop_frac_day, filename="conus_age_pop_frac_day.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(conus_pop_frac_night, filename="conus_age_pop_frac_night.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+
+
+
+#VTinney 2019-3-15
+
+library(raster)
+library(maptools)
+library(rgdal)
+
+#import shapefile of bay area extent
+setwd('/home/vtinney/CIESEN/BA_Shape/')
+sp_df <- readOGR(dsn =getwd(), layer = "BA_9_1984")
+
+#import rasters
+
+setwd('/home/vtinney/CIESEN/')
+
+1 <- raster("25_29.tif")
+2 <- raster("30_34.tif")
+3 <- raster("35_39.tif")
+4 <- raster("40_44.tif")
+5 <- raster("45_49.tif")
+6 <- raster("50_54.tif")
+7 <- raster("55_59.tif")
+8 <- raster("60_64.tif")
+9 <- raster("65_69.tif")
+10 <- raster("70_74.tif")
+11 <- raster("75_79.tif")
+12 <- raster("80_84.tif")
+
+setwd('/home/vtinney/CIESEN/total/')
+ba_pop_tot <- raster('ba_pop_tot.tif')
+
+#create one for 25-64
+25_64 <- merge(1, 2, 3, 4, 5, 6, 7, 8)
+65_99 <- merge(9, 10, 11, 12)
+
+#create population fraction by dividing raster stack by the gpw population total
+pop_frac_25_64 <- 25_64 / ba_pop_tot
+pop_frac_65_99 <- 65_99 / ba_pop_tot
+
+#import LandScan raster
+setwd('/home/vtinney/')
+day <- raster('pop/LandScan/DAY_BA.tif')
+night <- raster('pop/LandScan/NIGHT_BA.tif')
+
+#Resample such that LandScan and Population fraction are on the same resolution
+resample_pop_frac_25_64_day <- resample(pop_frac_25_64, day, method='bilinear')
+resample_pop_frac_25_64_night <- resample(pop_frac_25_64, night, method='bilinear')
+resample_pop_frac_65_99_day <- resample(pop_frac_25_64, day, method='bilinear')
+resample_pop_frac_65_99_night <- resample(pop_frac_25_64, night, method='bilinear')
+
+#Multiple population fraction by the original population counts in LandScan
+day_pop_frac_25_64 <- resample_pop_frac_25_64_day * day
+night_pop_frac_25_64 <- resample_pop_frac_25_64_night * night
+
+day_pop_frac_65_99 <- resample_pop_frac_65_99_day * day
+night_pop_frac_65_99 <- resample_pop_frac_65_99_night * night
+
+
+#Label layer names with age groups
+names(conus_pop_frac) <- c('0_4', '5_9', '10_14', '15_19', '20_24', '25_29', '30_34', '35_39', '40_44', '45_49', 
+                           '50_54', '55_59', '60_64', '65_69', '70_74', '75_79', '80_84')
+
+#write out both rasters
+writeRaster(25_64, filename="25_64.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(65_99, filename="65_99.tif", bylayer=TRUE, format="GTiff", overwrite=TRUE)
+
+#write out conus day and night
+writeRaster(day_pop_frac_25_64, filename='day_pop_frac_25_64', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(night_pop_frac_25_64, filename='night_pop_frac_25_64', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+
+writeRaster(day_pop_frac_65_99, filename='day_pop_frac_65_99', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(night_pop_frac_65_99, filename='night_pop_frac_65_99', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+
+#write out pop frac
+writeRaster(pop_frac_25_64, filename='pop_frac_25_64', bylayer=TRUE, format="GTiff", overwrite=TRUE)
+writeRaster(pop_frac_65_99, filename='pop_frac_65_99', bylayer=TRUE, format="GTiff", overwrite=TRUE)

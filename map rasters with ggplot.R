@@ -1,4 +1,5 @@
 #Crop and convert vonDonkelaar data
+# adapted from https://stackoverflow.com/questions/33227182/how-to-set-use-ggplot2-to-map-a-raster
 #2019-3-19
 
 library(raster)

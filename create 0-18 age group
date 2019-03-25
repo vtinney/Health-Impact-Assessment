@@ -1,0 +1,42 @@
+setwd('/home/vtinney/pop/age_frac/BA/age_count/')
+
+#Load rasters
+age0_4 <- raster('allages_pop_total_0_4.tif')
+age5_9 <- raster('allages_pop_total_5_9.tif')
+age10_14 <- raster('allages_pop_total_10_14.tif')
+age15_19 <- raster('allages_pop_total_15_19.tif')
+
+#Create a raster with one fifth the age of 15_19
+sub15_19 <- age15_19/5
+
+#Subtract that from the overall
+sub0_18 <- age15_19-sub15_19
+
+#Stack and sum the raster values
+age0_18 <- stack(age0_4, age5_9, age10_14, sub0_18)
+sst <- sum(age0_18)
+
+#write out counts of 0-18
+writeRaster(sst, filename='ages0_18.tif', format="GTiff", overwrite=TRUE)
+
+#Create pop fraction
+#Load total
+setwd('/home/vtinney/CIESEN/')
+total <- raster('ba_pop_tot.tif')
+
+
+#Create pop fraction
+pop_frac <- sst / total
+writeRaster(pop_frac, filename='pop_frac_0_18.tif', format="GTiff", overwrite=TRUE)
+
+
+setwd('/home/vtinney/pop/LandScan/')
+day <- raster('DAY_BA.tif')
+
+#Resample such that LandScan and Population fraction are on the same resolution
+resample_pop_frac <- resample(pop_frac, day, method='bilinear')
+
+#Multiple population fraction by the original population counts in LandScan
+day_pop_frac <- resample_pop_frac * day
+
+writeRaster(day_pop_frac, filename="day_age_pop_frac_0_18.tif", format="GTiff", overwrite=TRUE)

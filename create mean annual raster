@@ -1,0 +1,22 @@
+library(raster)
+library(rgdal)
+
+setwd('/home/vtinney/pollutants/JS/Bay_Area/')
+
+# Find tif files using a pattern
+files <- list.files(pattern = "\\.tif*")
+
+b <- stack(files)
+c <- mean(b)
+
+writeRaster(c, filename='mean_bay_16.tif', format="GTiff", overwrite=TRUE)
+
+
+
+setwd('/home/vtinney/pollutants/JS/Houston/')
+# Find tif files using a pattern
+files <- list.files(pattern = "\\.tif*")
+
+r <- stack(files)
+a <- mean(r)
+writeRaster(a, filename='mean_houston_16.tif', format="GTiff", overwrite=TRUE)

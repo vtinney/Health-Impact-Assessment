@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# set output and error output
+#SBATCH -o /home/vtinney/pollutants/rgpNO2%j.out
+#SBATCH -e /home/vtinney/pollutants/rgpNO2%j.err
+
+# default queue, single node
+#SBATCH -p c1exp
+#SBATCH -N 1
+
+# time limit
+#SBATCH -t 6:00:00
+
+#SBATCH -D /home/vtinney/pollutants/
+#SBATCH -J rpg.NO2
+
+module load gdal/gcc/2.2.0
+module load proj.4
+
+gdalwarp -te -18000 -6037.041 18000 7429.759 -r near -srcnodata 128 -co compress=LZW -co TILED=YES -overwrite Global_LUR_NO2_2011_16b_2.tif temp.tif
+
+gdalwarp -tap -s_srs "+proj=goode +lon_0=0 +x_0=0 +y_0=0 +a=6371007 +b=6371007 +units=km +no_defs" -t_srs "+proj=moll +lon_0=0 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs" -tr 250 250 -r average -wo SOURCE_EXTRA=1000 -co compress=LZW -co TILED=YES -overwrite temp.tif final.tif
+
+

@@ -1,5 +1,5 @@
 
-setwd("C:/Users/vtinney/Dropbox/EDF_shared/Rates/CHIS")
+setwd("C:/Users/vtinney/Dropbox/EDF_2019/scape")
 
 library(RCurl)
 library(rjson)
@@ -9,7 +9,48 @@ library(jsonlite)
 library(lubridate)
 options(stringsAsFactors = FALSE)
 
-#JSON with pediatric asthma rates CHIS 2014
+#JSON with adult asthma rates CHIS 2012
+asthmaa <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMAA?geotype=zcta&dataSetId=13")
+data_asthmaa <- fromJSON(asthmaa, flatten = TRUE)
+df <- do.call(rbind.data.frame, data_asthmaa$geographies)
+
+df <- as.data.frame(df, row.names=NULL)
+is.data.frame(df)
+
+#export dataframe to txt file
+options(max.print=999999)
+sink("asthmaa_12.txt")
+print(df)
+sink()
+
+#JSON for ped asthma CHIS 2012
+asthmac <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMATC?geotype=zcta&dataSetId=13")
+data_asthmac <- fromJSON(asthmac, flatten = TRUE)
+df2 <- do.call(rbind.data.frame, data_asthmac$geographies)
+
+df2 <- as.data.frame(df2, row.names=NULL)
+is.data.frame(df2)
+
+options(max.print=999999)
+sink("asthmac_12.txt")
+print(df2)
+sink()
+
+#JSON for ped asthma CHIS 2012
+heartd <- getURL("http://api.chis.ucla.edu/NE/api/variable/HEARTDA?geotype=zcta&dataSetId=13")
+data_heartd <- fromJSON(heartd, flatten = TRUE)
+df3 <- do.call(rbind.data.frame, data_heartd$geographies)
+
+df3 <- as.data.frame(df3, row.names=NULL)
+is.data.frame(df3)
+
+options(max.print=999999)
+sink("heartd_12.txt")
+print(df3)
+sink()
+
+########################################################################################
+#JSON with adult asthma rates CHIS 2014
 asthmaa <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMAA?geotype=zcta&dataSetId=14")
 data_asthmaa <- fromJSON(asthmaa, flatten = TRUE)
 df <- do.call(rbind.data.frame, data_asthmaa$geographies)
@@ -19,11 +60,11 @@ is.data.frame(df)
 
 #export dataframe to txt file
 options(max.print=999999)
-sink("asthmaa.txt")
+sink("asthmaa_14.txt")
 print(df)
 sink()
 
-#JSON for adult asthma CHIS 2014
+#JSON for ped asthma CHIS 2014
 asthmac <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMATC?geotype=zcta&dataSetId=14")
 data_asthmac <- fromJSON(asthmac, flatten = TRUE)
 df2 <- do.call(rbind.data.frame, data_asthmac$geographies)
@@ -32,7 +73,7 @@ df2 <- as.data.frame(df2, row.names=NULL)
 is.data.frame(df2)
 
 options(max.print=999999)
-sink("asthmac.txt")
+sink("asthmac_14.txt")
 print(df2)
 sink()
 
@@ -44,7 +85,7 @@ df3 <- as.data.frame(df3, row.names=NULL)
 is.data.frame(df3)
 
 options(max.print=999999)
-sink("heartd.txt")
+sink("heartd_14.txt")
 print(df3)
 sink()
 

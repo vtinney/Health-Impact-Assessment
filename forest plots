@@ -1,0 +1,183 @@
+setwd("C:/Users/Veronica Tinney/Google Drive/EDF_shared/Epi/Lit Review/EPA PM2.5 ISA")
+
+library(ggplot2)
+library(forcats)
+library(metafor)
+
+##########################################################################
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Epi/Lit Review/EPA PM2.5 ISA")
+
+pm25_forest <- read_excel("pm25_forest.xlsx")
+
+data <- pm25_forest
+
+data$study.name <- paste(data$Study, data$Year, sep=' ')
+
+inc.asthma <- subset(data, Outcome=="Incident asthma")
+asthma.er <- subset(data, Outcome=="Asthma ER" )
+cvd <- subset(data, Outcome=="CVD ER")
+
+
+fp <- ggplot(data=inc.asthma, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("Asthma Incidence and PM2.5")# use a white background
+print(fp)
+
+ggsave(fp, file='pm25.asthma.inc.png', width=8, height=8, dpi=300)
+
+fp <- ggplot(data=asthma.er, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("Asthma ER visits and PM2.5")# use a white background
+print(fp)
+
+ggsave(fp, file='pm25.asthma.er.png', width=8, height=8, dpi=300)
+
+fp <- ggplot(data=cvd, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("CVD ER visits and PM2.5")# use a white background
+print(fp)
+
+ggsave(fp, file='pm25.cvd.er.png', width=8, height=8, dpi=300)
+
+
+########################################################################
+
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Epi/Lit Review/NO2 Asthma Incidence")
+
+no2_forest <- read_excel("no2_forest.xlsx")
+
+data <- no2_forest
+
+data$study.name <- paste(data$Study, data$Year, sep=' ')
+
+mort <- subset(data, Outcome=="All-cause mortality")
+inc.asthma <- subset(data, Outcome=="Asthma incidence" )
+cvd.mort <- subset(data, Outcome=="CVD mortality")
+
+fp <- ggplot(data=mort, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("All-cause Mortality and No2")# use a white background
+print(fp)
+
+ggsave(fp, file='no2.mort.png', width=8, height=8, dpi=300)
+
+
+fp <- ggplot(data=inc.asthma, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("Asthma incidence and No2")# use a white background
+print(fp)
+
+ggsave(fp, file='no2.asthma.inc.png', width=8, height=8, dpi=300)
+
+fp <- ggplot(data=cvd.mort, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("CVD Mortality and No2") +
+  facet_grid(Age_group~., scales = "free", space='free')
+print(fp)
+
+ggsave(fp, file='no2.cvd.mort.png', width=8, height=8, dpi=300)
+
+########################################################################
+setwd("C:/Users/vtinney/GoogleDrive/EDF_shared/Epi/Lit Review/Black Carbon and PM2.5")
+
+
+bc_forest <- read_excel("bc_forest.xlsx")
+
+data <- bc_forest
+
+data$study.name <- paste(data$Study, data$Year, sep=' ')
+
+mort <- subset(data, Outcome=="All-cause mortality")
+inc.asthma <- subset(data, Outcome=="Asthma incidence" )
+prev.asthma <- subset(data, Outcome=="Asthma prevalence" )
+cvd.mort <- subset(data, Outcome=="CVD mortality")
+cvd.er <- subset(data, Outcome=="CVD ER")
+
+fp <- ggplot(data=mort, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("All-cause Mortality and BC")# use a white background
+print(fp)
+
+ggsave(fp, file='bc.mort.png', width=8, height=8, dpi=300)
+
+
+fp <- ggplot(data=inc.asthma, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  facet_grid(Age_group~., scales = "free", space='free') +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("Asthma incidence and BC")# use a white background
+print(fp)
+
+ggsave(fp, file='bc.asthma.inc.png', width=8, height=8, dpi=300)
+
+fp <- ggplot(data=cvd.mort, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("CVD Mortality and BC") +
+  facet_grid(Age_group~., scales = "free", space='free')
+print(fp)
+
+ggsave(fp, file='bc.cvd.mort.png', width=8, height=8, dpi=300)
+
+
+fp <- ggplot(data=cvd.er, aes(x=fct_rev(study.name), y=RR, ymin=lower, ymax=upper)) +
+  geom_linerange(size=3, colour="#a6d8f0") +
+  geom_point(size=3, shape=21, fill="#008fd5", colour = "white", stroke = 1) +
+  geom_hline(aes(x=0, yintercept=1), lty=1) +
+  coord_flip() +  # flip coordinates (puts labels on y axis)
+  xlab("Study") + ylab("Effect Estimates (95% Confidence Interval)") +
+  theme_minimal() +
+  ggtitle("CVD ER visits and BC") +
+  facet_grid(Age_group~., scales = "free", space='free')
+print(fp)
+
+ggsave(fp, file='bc.cvd.er.png', width=8, height=8, dpi=300)

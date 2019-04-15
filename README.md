@@ -58,7 +58,10 @@ Mortality source: https://data.chhs.ca.gov/dataset/leading-causes-of-death-by-zi
 Population denominator source: U.S. Census Bureau, 2012-2016 American Community Survey 5-Year Estimates, 2016
 County rates (missing data for zip): CDC Wonder, 2016
 
+
 ### All-cause Mortality
+<iframe width="700" height="700" src="http://rpubs.com/vatsouth/487235" frameborder="0" allowfullscreen> </iframe>
+
 
 ## Alameda County Public Health Department Mortality Rates
 

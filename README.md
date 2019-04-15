@@ -35,11 +35,10 @@
   * County Asthma ED Visit Rates
   * Database: LGHC Indicators
 
-### Asthma ER visits - Pediatric
+### Asthma ER visits
 
-### Asthma ER visits - Adult
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487192"> </iframe>
 
-### Asthma ER visits - All
 
 ## Asthma Prevalence
 

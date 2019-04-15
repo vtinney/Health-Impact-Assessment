@@ -57,9 +57,10 @@ Data on asthma prevalence is from the California Health Interview Survey (CHIS) 
 Source: http://askchisne.ucla.edu/ask/SitePages/Login.aspx?ReturnUrl=%2fask%2f_layouts%2fAuthenticate.aspx%3fSource%3d%252Fask%252F%255Flayouts%252Fne%252Fdashboard%252Easpx&Source=%2Fask%2F_layouts%2Fne%2Fdashboard%2Easpx
 
  
-### Asthma - Pediatric
+### Asthma Prevalence
 
-### Asthma - Adult
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487191"> </iframe>
+
 
 
 ##  Mortality - Zip code

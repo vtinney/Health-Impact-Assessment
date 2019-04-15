@@ -20,8 +20,6 @@
 
 ### Mean 2015-2016
 
-<iframe align = "center" width = "700" height = "700" src="https://raw.githubusercontent.com/vtinney/Health-Impact-Assessment/master/mean_15_16_js.html" > </iframe>
-
 ### Daily 2016
 
 # Input Rates HIA
@@ -105,3 +103,4 @@ All-cause mortality and CVD mortality were created by the Alameda County Public 
 Asthma hospitalization rates data for ages 65 and above was extracted from BenMap-CE 1.4.14. BenMap is a software produced by the US Environmental Protection Agency (EPA) for conducting health impact assessment, and contains data inputs compiled by the EPA. We chose the incidence rate corresponding with the concentration response function in Peng et al. 2009 and black carbon, which is the hospitalization rate for cardiovascular disease less myocardial infarctions for those age 65 and above. EPA estimated the 2011-2014 incidence for CVD hospitalization based on discharge data from the Healthcare Cost and Utilization Project (HCUP), and provides calculated county-level data for age, sex, and ethnicity. The hospitalization rate for each county was determined by dividing an adjusted county-level hospitalization count by the Census estimated county-level population for 2010.
 
 ### CVD Hospitalizations
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487189"> </iframe>

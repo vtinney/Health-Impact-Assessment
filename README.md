@@ -20,6 +20,8 @@
 
 ### Mean 2015-2016
 
+<iframe align = "center" width = "700" height = "700" src="https://raw.githubusercontent.com/vtinney/Health-Impact-Assessment/master/mean_15_16_js.html" > </iframe>
+
 ### Daily 2016
 
 # Input Rates HIA

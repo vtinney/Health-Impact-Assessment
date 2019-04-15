@@ -3,7 +3,7 @@
 ##  EDF Mobile Monitoring
 
 ### Nitrogen Dioxide
-<iframe width="700" height="700" src="http://rpubs.com/vatsouth/487204" frameborder="0" allowfullscreen> </iframe>
+<iframe width="700" height="700" src="http://rpubs.com/vatsouth/487204"> </iframe>
 
 ### Black Carbon
 <iframe width="700" height="700" src="http://rpubs.com/vatsouth/487201" frameborder="0" allowfullscreen> </iframe>

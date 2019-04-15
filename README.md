@@ -3,10 +3,10 @@
 ##  EDF Mobile Monitoring
 
 ### Nitrogen Dioxide
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487204"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487204" > </iframe>
 
 ### Black Carbon
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487201"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487201" > </iframe>
 
 # Input Rates HIA
 
@@ -23,7 +23,7 @@
 
 ### Asthma ER visits
 
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487192"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487192" > </iframe>
 
 
 ## Asthma Prevalence
@@ -44,7 +44,7 @@ Source: http://askchisne.ucla.edu/ask/SitePages/Login.aspx?ReturnUrl=%2fask%2f_l
  
 ### Asthma Prevalence
 
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487191"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487191" > </iframe>
 
 
 
@@ -78,18 +78,18 @@ All-cause mortality and CVD mortality were created by the Alameda County Public 
 ### All-cause Mortality Alameda Census Block Group
 
 #### All-cause mortality, ages 25-99
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487194"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487194" > </iframe>
 
 #### All-cause mortality, ages 65-99
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487196"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487196" > </iframe>
 
 ### CVD Mortality Alameda Census Block Group
 
 #### CVD Mortality, ages 25-99
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487197"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487197" > </iframe>
 
 #### CVD Mortality, ages 25-99
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487199"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487199" > </iframe>
 
 
 ##  CVD Hospitalization
@@ -99,7 +99,7 @@ All-cause mortality and CVD mortality were created by the Alameda County Public 
 Asthma hospitalization rates data for ages 65 and above was extracted from BenMap-CE 1.4.14. BenMap is a software produced by the US Environmental Protection Agency (EPA) for conducting health impact assessment, and contains data inputs compiled by the EPA. We chose the incidence rate corresponding with the concentration response function in Peng et al. 2009 and black carbon, which is the hospitalization rate for cardiovascular disease less myocardial infarctions for those age 65 and above. EPA estimated the 2011-2014 incidence for CVD hospitalization based on discharge data from the Healthcare Cost and Utilization Project (HCUP), and provides calculated county-level data for age, sex, and ethnicity. The hospitalization rate for each county was determined by dividing an adjusted county-level hospitalization count by the Census estimated county-level population for 2010.
 
 ### CVD Hospitalizations
-<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487189"> </iframe>
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487189" > </iframe>
 
 
 

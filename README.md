@@ -3,24 +3,10 @@
 ##  EDF Mobile Monitoring
 
 ### Nitrogen Dioxide
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487204"> </iframe>
 
 ### Black Carbon
-
-##  JS Annual Concentrations
-
-### 2013
-
-### 2014
-
-### 2015
-
-### 2016
-
-### Mean 2013-2016
-
-### Mean 2015-2016
-
-### Daily 2016
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487201"> </iframe>
 
 # Input Rates HIA
 
@@ -91,9 +77,19 @@ All-cause mortality and CVD mortality were created by the Alameda County Public 
 
 ### All-cause Mortality Alameda Census Block Group
 
+#### All-cause mortality, ages 25-99
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487194"> </iframe>
+
+#### All-cause mortality, ages 65-99
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487196"> </iframe>
+
 ### CVD Mortality Alameda Census Block Group
 
+#### CVD Mortality, ages 25-99
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487197"> </iframe>
 
+#### CVD Mortality, ages 25-99
+<iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487199"> </iframe>
 
 
 ##  CVD Hospitalization
@@ -104,3 +100,24 @@ Asthma hospitalization rates data for ages 65 and above was extracted from BenMa
 
 ### CVD Hospitalizations
 <iframe align = "center" width = "700" height = "700" src="http://rpubs.com/vatsouth/487189"> </iframe>
+
+
+
+
+
+
+##  JS Annual Concentrations
+
+### 2013
+
+### 2014
+
+### 2015
+
+### 2016
+
+### Mean 2013-2016
+
+### Mean 2015-2016
+
+### Daily 2016

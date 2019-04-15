@@ -38,13 +38,10 @@
   * Database: LGHC Indicators
 
 ### Asthma ER visits - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473353" > </iframe>
 
 ### Asthma ER visits - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473354" > </iframe>
 
 ### Asthma ER visits - All
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473355" > </iframe>
 
 ## Asthma Prevalence
 
@@ -63,10 +60,8 @@ Source: http://askchisne.ucla.edu/ask/SitePages/Login.aspx?ReturnUrl=%2fask%2f_l
 
  
 ### Asthma - Pediatric
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473426" > </iframe>
 
 ### Asthma - Adult
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/473427" > </iframe>
 
 
 ##  Mortality - Zip code
@@ -84,7 +79,6 @@ Population denominator source: U.S. Census Bureau, 2012-2016 American Community 
 County rates (missing data for zip): CDC Wonder, 2016
 
 ### All-cause Mortality
-<iframe align = "center" width = "700" height = "700" src="https://rpubs.com/vatsouth/476270" > </iframe>
 
 ## Alameda County Public Health Department Mortality Rates
 

@@ -2,6 +2,16 @@
 
 ##  EDF Mobile Monitoring
 
+  <div id="ajaxContent"></div>
+  <script>
+  var Webflow = Webflow || [];
+  Webflow.push(function() {
+    $.get('https://raw.githubusercontent.com/vtinney/Health-Impact-Assessment/master/bc_edf_cb.html', function(data) {
+      $('#ajaxContent').append(data);
+    });
+  });
+  </script>
+
 ### Nitrogen Dioxide
 
 ### Black Carbon

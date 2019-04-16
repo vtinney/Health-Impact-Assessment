@@ -2,8 +2,6 @@
 
 ##  EDF Mobile Monitoring
 
-https://github.com/vtinney/Health-Impact-Assessment/blob/master/2013_js.html
-
 ### Nitrogen Dioxide
 
 ### Black Carbon

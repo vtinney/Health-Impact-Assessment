@@ -40,8 +40,6 @@ Source: http://askchisne.ucla.edu/ask/SitePages/Login.aspx?ReturnUrl=%2fask%2f_l
 
  
 ### Asthma Prevalence
-<iframe width="700" height="700" src="http://rpubs.com/vatsouth/487191" frameborder="0" allowfullscreen> </iframe>
-
 
 ##  Mortality - Zip code
 

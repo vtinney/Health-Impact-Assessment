@@ -65,3 +65,20 @@ writeRaster(pop_frac_0.17, filename='pop_frac_0.17', format="GTiff", overwrite=T
 writeRaster(conus.25.99, filename='ls.25.99', format="GTiff", overwrite=TRUE)
 writeRaster(conus.popfrac.65.99, filename='ls.65.99', format="GTiff", overwrite=TRUE)
 writeRaster(conus.popfrac.0.17, filename='ls.0.17', format="GTiff", overwrite=TRUE)
+
+
+######################################################################
+# night
+
+#import LandScan raster
+setwd('/home/vtinney/')
+night <- raster('bay.night.tif')
+
+night.25.99 <- pop_frac_25.99*night
+night.popfrac.65.99 <- pop_frac_65.99*night
+night.popfrac.0.17 <- pop_frac_0.17*night
+
+#write out conus
+writeRaster(night.25.99, filename='ls.night.25.99', format="GTiff", overwrite=TRUE)
+writeRaster(night.popfrac.65.99, filename='ls.night.65.99', format="GTiff", overwrite=TRUE)
+writeRaster(night.popfrac.0.17, filename='ls.night.0.17', format="GTiff", overwrite=TRUE)

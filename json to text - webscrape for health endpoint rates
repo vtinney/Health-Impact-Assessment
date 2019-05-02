@@ -89,6 +89,20 @@ sink("heartd_14.txt")
 print(df3)
 sink()
 
+#JSON with adult asthma rates County 2014
+asthmac <- getURL("http://api.chis.ucla.edu/NE/api/variable/ASTHMATC?geotype=counties&dataSetId=14")
+data_asthmac <- fromJSON(asthmac, flatten = TRUE)
+df <- do.call(rbind.data.frame, data_asthmac$geographies)
+
+df <- as.data.frame(df, row.names=NULL)
+is.data.frame(df)
+
+#export dataframe to txt file
+options(max.print=999999)
+sink("asthmac_14_county1.txt")
+print(df)
+sink()
+
 
 
 

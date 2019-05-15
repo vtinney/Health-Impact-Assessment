@@ -1,8 +1,16 @@
+
+
 library(raster)
 library(maptools)
 library(rgdal)
 
 setwd('/home/vtinney/pop/world_pop/world_pop_16/clip/')
+
+rast <- list.files()
+a <- stack(rast)
+
+a[a == -9999] <- NA
+
 
 f.0 <- raster("usa_f_0_wpgl_2016_clip.tif")
 f.1 <- raster("usa_f_1_wpgl_2016_clip.tif")
@@ -44,6 +52,7 @@ m.80 <- raster("usa_m_80_2016_clip.tif")
 
 setwd('/home/vtinney/pop/world_pop/')
 ba_pop_tot <- raster('usa_ppp_2016_clip.tif')
+ba_pop_tot[ba_pop_tot == -9999] <- NA
 
 #create 25-99
 x25.99 <- f.25 + f.30 + f.35 + f.40 + f.45 + f.50 + f.55 + f.60 + f.65 + f.70 + f.75 + f.80 +

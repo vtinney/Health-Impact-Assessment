@@ -1,0 +1,7 @@
+df <- c(1:10)
+df <- matrix(df, nrow=2, byrow=T)
+df <- as.data.frame(df)
+
+for(var in colnames(df)) {
+  df[[paste0(var, '_t')]] <- sum(df[[var]])
+}

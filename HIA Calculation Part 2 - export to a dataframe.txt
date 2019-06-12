@@ -1,0 +1,83 @@
+# This script exports HIA results to a dataframe from a raster format
+# Created 6-12-2019
+# Author: Veronica Southerland
+
+# This is Part 2 in the HIA calculation. Previously, everything was run and 
+# exported to tif files. That works for plotting results, but for graphs and
+# other analyses, you will need it in a dataframe or exported to a .csv file.
+
+# load the required libraries.
+
+library(raster)
+library(rgdal)
+library(glue)
+library(dplyr)
+library(Rcpp)
+
+# Set rasters for aggregation
+# Our previous calculation was all run at different extents, but that doesn't 
+# mean that the rates, populations, etc, followed that same extent. For example
+# The population dataset is larger than just the Alameda County shape file.
+# When we aggregate results, we want to make sure that we are aggregating to the 
+# County and zero'ing out all other values not directly in the shape file.
+
+# First load the shapefiles for your area of interest, in this case the bay area.
+setwd('/home/vtinney/run/clip/')
+bay <- readOGR(dsn=getwd(), layer='cvdmort_county_25_99') # This is a rate file but the boundary extent is the same.
+
+# This is where all of my results are saved for the hia results, rates, etc.
+# I am now going to run a for loop that cycles through each file, crops it to the extent 
+# I want, and then masks it to the shape file I specify.
+
+setwd('/home/vtinney/run/results/pm/all.cause/paf/bay/')
+	files <- paste(list.files(pattern = "\\.tif*", full.names=TRUE)) 	# past all the file names into R
+
+	outpath <- '/home/vtinney/run/results/pm/all.cause/paf/bay/crop/'	# Path where I want all the new files saved
+	dir.create(outpath)							# This doesn't exist, so I create it
+	outfiles <- paste0(outpath, files)					# The name of my outfiles will be my path, plus the same name as the
+										# input files
+
+	for(i in 1:length(files)) {						# Now for the for loop
+    		r <-raster(files[i])						# Load the raster files
+		
+		rc <- crop(r, bay)						# Crop them to the extent, this makes the masking faster
+    		
+		rc <- mask(r, bay)						# MASK is the function you want. ArcMap uses crop to mean 
+										# crop to the shapefile, but mask is what zero's out all 
+										# values not in the shapefile, and in R, crop only crops to the
+										# extent of the shapefile.
+    		
+		rc <- writeRaster(rc, outfiles[i])				# write out the rasters
+    		
+		print(files[i])							# Print functions just help you see the code is moving along.
+										# Also if you have an error, the last printed file is where
+										# the code went wrong.
+	}
+
+setwd('/home/vtinney/run/results/pm/all.cause/paf/bay/crop/')			# Okay, now they are all masked to the extent I want, so 
+										# I can put them in a dataframe.
+	files <- paste(list.files(pattern = "\\.tif*", full.names=TRUE))	# Same command load the files.
+	
+	p <- stack(files)							# Now I am stacking them. This creates a raster brick of all 
+										# raster files.
+	
+	p <- as.data.frame(p)							# Convert the raster brick into a dataframe.
+										# Always good to use command head(p) to make sure it worked before 
+										# moving on.
+	
+	p[p ==0] <- NA								# We want to see all of the 0 values to NA here. I don't do 
+										# this for mapping, but for our purposes, we want to know what the
+										# mean, iqr, etc are for grid cells that have values. If we count
+										# those with 0 then we are going to get a very low values for our mean.
+
+setwd('/home/vtinney/run/results/pm/all.cause/df/')				# Where to save the file
+	bay.sum <- colSums(p, na.rm=TRUE)					# Compute column sums
+	bay.mean <- apply(p,2,mean,na.rm=TRUE)					# Compute the column means
+	bay.iqr <- apply(p,2,quantile,na.rm=TRUE)				# Compute quantiles - this will give you min, max, q25, q50, and q75
+	bay.paf <- rbind(bay.sum, bay.mean, bay.iqr)				# Combine the above three into one dataset.
+	write.csv(bay.paf, 'paf.sum.bay.csv')					# write the dataset.
+
+# Now everything is easily opened in excel, but you will notice that the way I've set it up
+# the first column is a string of all the inputs in that analysis. The reason I used
+# a separator of "." in Part 1 of the HIA is so that in excel you can easily do "text to columns", with a "." as the separator.
+# There are certainly more efficient ways to run these codes, so suggestions happily accepted!

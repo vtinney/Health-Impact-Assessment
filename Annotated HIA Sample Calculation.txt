@@ -1,0 +1,389 @@
+# This is a sample script to perform HIA for the Bay area PM2.5 and all-cause mortality
+# Created: 2019-06-12
+# Author: Veronica Southerland
+#=================================================================
+# 
+# My code generally has two parts 
+# Part 1 is the actual HIA calculation which results in raster .tif files for each
+# result.
+# Part 2 is the exporting the results to the dataframe for a specified area.
+
+# This file covers only Part 1
+
+# Setting up the data
+# This calculation multiplies rasters through an overlay function. There are other
+# ways to do this, but I like the overlay as it allows you to write a raster straight
+# from the calculation, rather than a different step. In order to do it this way
+# you need to have all files on the same raster extent, resolution, projection and datum.
+
+# So for example, if you have a 1km by 1km dataset, in order to run the calcuation
+# at 100m (in this example, you will have first needed to disaggregate it - 
+# using gdalwarp in gdal is best. Similarly if you have a shapefile of rates, you  
+# will need to rasterize that (ArcMap is easiest for this).
+
+# For this example, all read-in files are rasters with the following characteristics: 
+# 2367, 2909, 6885603  (nrow, ncol, ncell)
+# -123.6325, -121.2083, 36.8925, 38.865  (xmin, xmax, ymin, ymax)
+# 0.0008333333, 0.0008333333  (x, y)
+# CRS: +proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0
+# 
+#==================================================================
+#Set working directory and load required libraries
+setwd('/home/vtinney/run/')
+library(raster)
+library(sp)
+library(rgdal)
+# ==================================================================
+# Specify where the files are that you are going to load
+pops <- '/home/vtinney/run/pop/'
+rates <- '/home/vtinney/run/rates/'
+concs <- '/home/vtinney/run/conc/'
+betas <- '/home/vtinney/run/betas/pm/'
+poptotal <- '/home/vtinney/run/pop/'
+
+# ==================================================================
+								# This is a first calculation for adults in the Bay area
+# Adult, Bay calc set up
+								# This part is creating empty vector names that correspond with the file
+								# names in my file locations. So for example, the rate groups for County, 
+								# ages 25-99 years, I have labeled "mortality.co.25". I will bring in the 
+								# mortality later. 
+
+rate.groups <- c('co.25')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+
+								# A note about the betas. You don't have to load a raster with the beta
+								# values, you can also just create a vector with the beta values. In this case
+								# I just wanted to be careful, but will probably just use a vector going forward.
+
+								# Now being the for loop for: Adults, Bay area
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i]) # I print them so I can see the calculation is running
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))	# The paste function helps preserve memory rather than loading all the files
+								# This says - paste all the rasters that are in the filepath "betas" (specified above)
+								# and that correspond with the beta.groups that I listed in the empty vector above
+								# and these names are seperated with no spaces and are a tif file.
+								# This is the logic and how all the files below are loaded in.
+
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))		
+		
+		#Bay area AF					# Here we are doing the attributable fraction, which is just the concentration
+								# multiplied by the beta (so does not include population or rates).
+	
+		f1 = paste('/home/vtinney/run/results/pm/all.cause/af/bay/bay.',beta.groups[i],'.',conc.groups[j],'.tif',sep='')
+		af = overlay(n, a, fun=function(r1, r2){1-exp(-r1*r2)}, filename=f1, format="GTiff", overwrite=TRUE)
+
+								# The overlay function works by loading the two files (concentration & beta)
+								# and then in the "function" we call them r1 and r2, and then we specify the 
+								# formula we want r1 and r2 to follow, in this case AF.
+								# We then write this to a tif file using the name and file path I specified in f1.
+
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))	
+								# We load in rates the same way as above. Note that my files have the word "mortality"
+								# in them, but my vector only says "co.25" for County rates, ages 25-99 years. We therefore
+								# have to add the word mortality after the file path of "rates" which we specified in the 
+								# beginning.
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'bay.pop.',pop.groups[h],'.tif',sep=''))
+			
+				#Bay area PAF			# Now we are doing the same as above, but we are bringing in the rates and population.
+								# Note that I have to also add a (10^-4) as my rates are all in per 10,000.
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Bay area rate			# Here I am calculating the number of excess deaths per 100,000 per grid cell.
+								# This comparison of rates I only have been using to visually compare. For aggregating
+								# the rate values, you will want to use the next calculation.
+
+				f3 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+				
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.bay.pop.',pop.total[m],'.tif',sep=''))
+
+								# Here I am calculating the rate per grid cell based on the total population of my area
+								# of interest, in this case the bay area. The "Total population" grids have the total
+								# population of the area in each grid cell. There are definitely other ways to do this.
+								# For example you can just sum the total HIA deaths per the area of interest, divide
+								# by the total population, and multiply by 100,000. The reason I did it like this is that
+								# when I export, and then sum all of the raster values in the next step, this is equivalent
+								# and I can re-use these raster files for subsequent calculations. When you do export and 					
+								# and sum to a dataframe, you will have to remember to multiply by 100,000 or whatever base.
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+								# So technically my above calculation multiplied my results by ALL of the total population
+								# rasters. This is one area where the code could be improved, but it is not wrong. However
+								# you only want to write out the cases where the population group corresponds with the 
+								# underlying total population. This if then statement says, if the name of the population
+								# is the same as the name of the total population, then write out the tif file. If not,
+								# then do nothing.
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}
+
+# ==================================================================
+# Adult, Alameda calc set up
+rate.groups <- c('cbg.25', 'ct.25', 'co.25')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+
+# Loop: Adults, Alameda
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i])
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))	
+
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))	
+		
+		#Alameda area AF
+	
+		f1 = paste('/home/vtinney/run/results/pm/all.cause/af/alameda/alameda.',beta.groups[i],'.',conc.groups[j],'.tif',sep='')
+		af = overlay(n, a, fun=function(r1, r2){1-exp(-r1*r2)}, filename=f1, format="GTiff", overwrite=TRUE)
+
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))
+
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'alameda.pop.',pop.groups[h],'.tif',sep=''))
+			
+				#Alameda area PAF
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/alameda/alameda.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Alameda area rate
+				f3 = paste('/home/vtinney/run/results/pm/all.cause/paf/alameda/alameda.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.alameda.pop.',pop.total[m],'.tif',sep=''))
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/alameda/alameda.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}
+
+# ==================================================================
+# Adult, Oakland calc set up
+rate.groups <- c('cbg.25', 'ct.25', 'co.25')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day.25', 'wp.day.25', 'ls.night.25', 'wp.night.25')
+
+# Loop: Adults, Oakland
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i])
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))
+	
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))		
+		
+		#Oakland area AF
+	
+		f1 = paste('/home/vtinney/run/results/pm/all.cause/af/oak/oak.',beta.groups[i],'.',conc.groups[j],'.tif',sep='')
+		af = overlay(n, a, fun=function(r1, r2){1-exp(-r1*r2)}, filename=f1, format="GTiff", overwrite=TRUE)
+
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))	
+			
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'oak.pop.',pop.groups[h],'.tif',sep=''))
+			
+				#Oakland area PAF
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Oakland area rate
+				f3 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.oak.pop.',pop.total[m],'.tif',sep=''))
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}
+
+# ==================================================================
+# All ages, Bay calc set up
+rate.groups <- c('co.all', 'zip.all')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day', 'wp.2016', 'ls.night')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day', 'wp.2016', 'ls.night')
+
+# Loop: All ages, Bay
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i])
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))	
+
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))
+		
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))	
+
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'bay.pop.',pop.groups[h],'.tif',sep=''))
+
+				#Bay area PAF
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Bay area rate
+				f3 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.bay.pop.',pop.total[m],'.tif',sep=''))
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/bay/bay.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}
+
+# ==================================================================
+# All ages, Alameda calc set up
+rate.groups <- c('cbg.all', 'ct.all', 'co.all')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day', 'wp.2016', 'ls.night')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day', 'wp.2016', 'ls.night')
+
+
+# Loop: All ages, Alameda
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i])
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))	
+
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))		
+	
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))
+			
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'alameda.pop.',pop.groups[h],'.tif',sep=''))
+
+				#Alameda area PAF
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/alameda/alameda.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Alameda area rate
+				f3 = paste('/home/vtinney/run/results/no2/all.cause/pm/alameda/alameda.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.alameda.pop.',pop.total[m],'.tif',sep=''))
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/alameda/alameda.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}
+
+# ==================================================================
+# All ages, Oakland calc set up
+rate.groups <- c('cbg.all', 'ct.all', 'co.all')
+conc.groups <- c('pm.2013', 'pm.2014', 'pm.2015', 'pm.2016', 'pm.mean.13.16', 'pm.mean.15.16')
+pop.groups <- c('ls.day', 'wp.2016', 'ls.night')
+beta.groups <- c('krew.all.point', 'krew.all.lower', 'krew.all.upper')
+pop.total <- c('ls.day', 'wp.2016', 'ls.night')
+
+# Loop: All ages, Oakland
+
+for (i in 1:length(beta.groups)){
+print(beta.groups[i])
+n = raster(paste(betas,'beta.',beta.groups[i],'.tif',sep=''))	
+
+	for (j in 1:length(conc.groups)){
+		print(conc.groups[j])
+		a = raster(paste(concs,'conc.',conc.groups[j],'.tif',sep=''))		
+
+		for (k in 1:length(rate.groups)){
+		print(rate.groups[k])
+		b = raster(paste(rates,'mortality.',rate.groups[k],'.tif',sep=''))	
+			
+			for (h in 1:length(pop.groups)){
+			print(pop.groups[h])
+			c = raster(paste(pops,'oak.pop.',pop.groups[h],'.tif',sep=''))
+
+				#Oakland area PAF
+	
+				f2 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.paf.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				hia = overlay(c, b, n, a, fun=function(r1, r2, r3, r4){return(r1*r2*(10^-4)*(1-exp(-r3*r4)))}, filename=f2, format="GTiff", overwrite=TRUE)
+
+				#Oakland area rate
+				f3 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.rate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+				rate = overlay(hia, c, fun=function(r1, r2){return((r1/r2)*100000)}, filename=f3, format="GTiff", overwrite=TRUE)                                                                                                                                                                                                                                                                                                                                                                			
+
+					for (m in 1:length(pop.total)){
+					print(pop.total[m])
+					r = raster(paste(poptotal,'total.oak.pop.',pop.total[m],'.tif',sep=''))
+
+					f4 = paste('/home/vtinney/run/results/pm/all.cause/paf/oak/oak.wrate.',beta.groups[i],'.',rate.groups[k],'.',pop.groups[h],'.',conc.groups[j],'.tif',sep='')
+					wrate100 = overlay(hia, r, fun=function(r1, r2){return(r1/r2)})
+
+						if (pop.groups[h] == pop.total[m]){
+
+						writeRaster(wrate100, filename=f4, format="GTiff", overwrite=TRUE)}
+						else{}	
+}}}}}

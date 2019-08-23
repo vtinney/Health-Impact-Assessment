@@ -1,0 +1,1298 @@
+# Difference analysis
+# Author: VSoutherland 7.25.2019
+# Runs and plots results between each step in the HIA
+
+library(raster)
+library(rgdal)
+
+#Set working directory and load files
+setwd('/home/vtinney/')
+library(raster)
+library(sp)
+library(rgdal)
+# ==================================================================
+# Specify where the files are
+pops <- '/home/vtinney/pop/'
+rates <- '/home/vtinney/rates/'
+concs <- '/home/vtinney/conc/'
+poptotal <- '/home/vtinney/pop/'
+
+no2 <- c('conc.larkin.ppb','conc.NO2.ppb')
+pm <- c('conc.pm.mean.15.16')
+bc <- c('conc.BC.ug')
+
+#Set rasters for Clip
+setwd('/home/vtinney/clip/')
+bay <- readOGR(dsn=getwd(), layer='bay')
+ala <- readOGR(dsn=getwd(), layer='alameda')
+oak <- readOGR(dsn=getwd(), layer='oak')
+
+setwd('/home/vtinney/rates/')
+#Rates
+asthma.er.zip.17 <- c('asthma.er.zip.17')
+asthma.er.zip.all <- c('asthma.er.zip.all')
+cvd.ha.zip.65 <- c('cvd.ha.zip.65')
+
+setwd('/home/vtinney/pop/')
+# Pop
+bay.pop.17 <- c('bay.pop.ls.night.17')
+bay.pop.25 <- c('bay.pop.ls.night.25')
+bay.pop.65 <- c('bay.pop.ls.night.65')
+bay.pop <- c('bay.pop.ls.night')
+
+setwd('/home/vtinney/results/diff/no2/')
+
+# No2
+no2.RR.25.all <- log(1.021/18.8) 		#NO2	All-cause mortality		Ages 25-99 years.	(Atkinson & Butland, 2018)
+
+mort.25 <- c('mortality.co.25','mortality.cbg.25','mortality.ct.25')
+
+# 1 - Done
+	for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.25.all*a))
+	
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.25.all.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.25.all.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.25.all.',no2[i],'.tif',sep='')
+		
+		
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.25)){
+			print(mort.25[k])
+
+			b = raster(paste(rates,mort.25[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.25.all.',mort.25[k],'.',no2[i],'.tif',sep='')
+				
+				c = raster(paste(pops,bay.pop.25,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	}
+
+# 2 - Done
+no2.RR.all.er.z <- log(1.013/18.8) 		#NO2	Asthma ER visits		All ages.		(Zheng et al., 2015)
+	#larkin
+	#gsv
+	#asthma.er.zip.all
+	#bay.pop
+
+	for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.all.er.z*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.all.er.z.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.all.er.z.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.all.er.z.',no2[i],'.tif',sep='')
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,asthma.er.zip.all,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.all.er.z.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+
+# 3  - Done
+no2.RR.all.er.ore <- (1.024/18.8) 	#LINEAR #NO2	Asthma ER visits		All ages.		(Orellano et al., 2017)
+	#larkin
+	#gsv
+	#asthma.er.zip.all
+	#bay.pop
+
+	for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.all.er.ore*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.all.er.ore.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.all.er.ore.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.all.er.ore.',no2[i],'.tif',sep='')
+		
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,asthma.er.zip.all,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.all.er.ore.',asthma.er.zip.all,'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+
+# 4 - Done
+no2.RR.17.er.z <- log(1.018/18.8)		#NO2	Asthma ER visits		Ages 0-17 years.	(Zheng et al., 2015)
+	#larkin
+	#gsv
+	#asthma.er.zip.17
+	#bay.pop.17
+
+	for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.17.er.z*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.17.er.z.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.17.er.z.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.17.er.z.',no2[i],'.tif',sep='')
+	
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,asthma.er.zip.17,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.17.er.z.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.17,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+
+
+# 5 - Done
+no2.RR.17.er.ore <- (1.04/18.8) 	#LINEAR #NO2	Asthma ER visits		Ages 0-17 years.	(Orellano et al., 2017)
+	#larkin
+	#gsv
+	#asthma.er.zip.17
+	#bay.pop.17
+
+	for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.17.er.ore*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.17.er.ore.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.17.er.ore.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.17.er.ore.',no2[i],'.tif',sep='')
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,asthma.er.zip.17,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.17.er.ore.',asthma.er.zip.17,'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.17,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+
+
+# 6 - Done
+no2.RR.25.cvd <- log(1.03/18.8)			#NO2	CVD mortality	All ages applied to ages 25-99 years.	(Atkinson et al., 2018)
+	
+	#larkin
+	#gsv
+	#mortality.cvd.cbg.25
+	#mortality.cvd.co.25
+	#mortality.cvd.ct.25
+	#bay.pop.25
+
+mort.cvd.25 <- c('mortality.cvd.cbg.25', 'mortality.cvd.co.25', 'mortality.cvd.ct.25')
+
+
+for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.25.cvd*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.25.cvd.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.25.cvd.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.25.cvd.',no2[i],'.tif',sep='')
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.cvd.25)){
+
+			print(mort.cvd.25[k])
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,mort.cvd.25[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.25.cvd.',mort.cvd.25[k],'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.25,'.tif',sep=''))
+				hia <- risk*c
+
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	}
+
+
+# 7 - Done
+no2.RR.65.all <- log(1.023/18.8)		#NO2	All-cause mortality		Ages 65-99 years.	(Eum et al., 2019)
+	#larkin
+	#gsv
+	#bay.pop.65
+	#mortality.cbg.65
+	#mortality.co.65
+	#mortality.ct.65
+
+mort.65 <- c('mortality.cbg.65', 'mortality.co.65', 'mortality.ct.65')
+
+for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.65.all*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.65.all.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.65.all.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.65.all.',no2[i],'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.65)){
+			print(mort.65[k])
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,mort.65[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.65.all.',mort.65[k],'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	}
+
+
+# 8 
+no2.RR.65.cvd <- log(1.103/10)			#NO2	CVD mortality			Ages 65-99 years.	(Eum et al., 2019)
+	#larkin
+	#gsv
+	#mortality.cvd.cbg.65
+	#mortality.cvd.co.65
+	#mortality.cvd.ct.65
+	#bay.pop.65
+
+mort.cvd.65 <- c('mortality.cvd.cbg.65', 'mortality.cvd.co.65', 'mortality.cvd.ct.65')
+
+for (i in 1:length(no2)){
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.65.cvd*a))
+
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.65.cvd.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.65.cvd.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.65.cvd.',no2[i],'.tif',sep='')
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.cvd.65)){
+		print(mort.cvd.65[k])
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,mort.cvd.65[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.65.cvd.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	}
+
+
+# 9 
+no2.RR.65.cvd.adj <- log(1.031/10)			#NO2	CVD mortality		Ages 65-99 years.	(Eum et al., 2019)
+	#larkin
+	#gsv
+	#mortality.cvd.cbg.65
+	#mortality.cvd.co.65
+	#mortality.cvd.ct.65
+	#bay.pop.65
+
+mort.cvd.65 <- c('mortality.cvd.cbg.65', 'mortality.cvd.co.65', 'mortality.cvd.ct.65')
+
+for (i in 1:length(no2)){
+		fa = paste0('/home/vtinney/results/diff/no2/af.ala.no2.RR.65.cvd.adj.',no2[i],'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/no2/af.bay.no2.RR.65.cvd.adj.',no2[i],'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/no2/af.oak.no2.RR.65.cvd.adj.',no2[i],'.tif',sep='')
+		
+		print(no2[i])
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-no2.RR.65.cvd.adj*a))
+
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.cvd.65)){
+		print(mort.cvd.65[k])
+			
+			f1 = paste0('/home/vtinney/results/diff/no2/mort.risk.ala.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/no2/mort.risk.oak.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/no2/mort.risk.bay.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+
+			b = raster(paste(rates,mort.cvd.65[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/no2/hia.ala.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/no2/hia.oak.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/no2/hia.bay.no2.RR.65.cvd.adj.',mort.cvd.65[k],'.',no2[i],'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	}
+
+
+
+#====================================================================================================================================
+
+#BC
+bc.RR.25.all <- log(1.007)			#BC	All-cause mortality		Ages 25-99 years.	(Janssen et al., 2011)
+	b#c
+	#mortality.co.25
+	#mortality.cbg.25
+	#mortality.ct.25
+	#bay.pop.25
+
+mort.25 <- c('mortality.co.25','mortality.cbg.25','mortality.ct.25')
+
+# 1 - Done
+		a = raster(paste(concs,bc,'.tif',sep=''))
+		af <- (1-exp(-bc.RR.25.all*a))
+
+		fo = paste0('/home/vtinney/results/diff/bc/af.oak.bc.RR.25.all.',bc,'.tif',sep='')
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.25)){
+			print(mort.25[k])
+
+			b = raster(paste(rates,mort.25[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			f2 = paste0('/home/vtinney/results/diff/bc/mort.risk.oak.bc.RR.25.all.',mort.25[k],'.',bc,'.tif',sep='')
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f5 = paste0('/home/vtinney/results/diff/bc/hia.oak.bc.RR.25.all.',mort.25[k],'.',bc,'.tif',sep='')
+				
+				c = raster(paste(pops,bay.pop.25,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+# 2 - Done
+
+bc.RR.65.cvdha <- log(1.008/0.4) 		#BC	CVD hospitalizations		Ages 65-99 years.	(Peng et al., 2009)
+	#bc
+	#cvd.ha.zip.65
+	#bay.pop.65
+
+		fo = paste0('/home/vtinney/results/diff/bc/af.oak.bc.RR.65.cvdha.',bc,'.tif',sep='')
+
+		a = raster(paste(concs,bc,'.tif',sep=''))
+		af <- (1-exp(-bc.RR.65.cvdha*a))
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.cvd.65)){
+		print(mort.cvd.65[k])
+
+			f2 = paste0('/home/vtinney/results/diff/bc/mort.risk.oak.bc.RR.65.cvdha.',cvd.ha.zip.65,'.',bc,'.tif',sep='')
+
+			b = raster(paste(rates,cvd.ha.zip.65,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+
+				f5 = paste0('/home/vtinney/results/diff/bc/hia.oak.bc.RR.65.cvdha.',cvd.ha.zip.65,'.',bc,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+
+# 3 - Done
+
+bc.RR.25.cvd <- log(1.0177) 			#BC	CVD mortality			All ages applied to ages 25-99 years.	(Janssen et al., 2011)
+ 	#bc
+	#mortality.cvd.cbg.25
+	#mortality.cvd.co.25
+	#mortality.cvd.ct.25
+	#bay.pop.25
+
+mort.cvd.25 <- c('mortality.cvd.cbg.25', 'mortality.cvd.co.25', 'mortality.cvd.ct.25')
+
+		a = raster(paste(concs,no2[i],'.tif',sep=''))
+		af <- (1-exp(-bc.RR.25.cvd*a))
+
+		fo = paste0('/home/vtinney/results/diff/bc/af.oak.bc.RR.25.cvd.',bc,'.tif',sep='')
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+
+		for (k in 1:length(mort.cvd.25)){
+
+			print(mort.cvd.25[k])
+			f2 = paste0('/home/vtinney/results/diff/bc/mort.risk.oak.bc.RR.25.cvd.',mort.cvd.25[k],'.',bc,'.tif',sep='')
+
+			b = raster(paste(rates,mort.cvd.25[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f5 = paste0('/home/vtinney/results/diff/bc/hia.oak.bc.RR.25.cvd.',mort.cvd.25[k],'.',bc,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.25,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+#=====================================================================================================================================================
+
+#PM2.5
+
+# 1 
+pm.RR.17.er <- log(1.048/1) 			#PM2.5	Asthma ER visits		Ages 0-17 years.	(Lim et al., 2016)
+	#asthma.er.zip.17
+	#bay.pop.17
+	#pm
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.17.er*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.17.er.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.17.er.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.17.er.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,asthma.er.zip.17,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.pm.RR.17.er.',asthma.er.zip.17,'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.17,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+
+# 2 
+pm.RR.65.cvdha <- log(1.0079/10)		#PM2.5	CVD hospitalizations		Ages 65-99 years	(Bravo et al., 2017)
+	#cvd.ha.zip.65
+	#bay.pop.65
+	#pm
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.65.cvdha*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.65.cvdha.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.65.cvdha.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.65.cvdha.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,cvd.ha.zip.65,'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.pm.RR.65.cvdha.',cvd.ha.zip.65,'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+
+
+# 3
+pm.RR.65.cvd <- log(1.1/10)			#PM2.5	CVD mortality		Ages 65 to 99 years.	(Thurston et al., 2016)
+	#mortality.cvd.cbg.65
+	#mortality.cvd.co.65
+	#mortality.cvd.ct.65
+	#bay.pop.65
+	#pm
+
+mort.cvd.65 <- c('mortality.cvd.cbg.65', 'mortality.cvd.co.65', 'mortality.cvd.ct.65')
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.65.cvd*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.65.cvd.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.65.cvd.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.65.cvd.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.cvd.65)){
+			print(mort.cvd.65[k])
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,mort.cvd.65[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.pm.RR.65.cvd.',mort.cvd.65[k],'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+# 4
+
+pm.RR.all.all <- log(1.06/10)			#PM2.5	All-cause mortality		All-ages	(Krewski et al. 2009)
+	#mortality.co.all
+	#mortality.ct.all
+	#mortality.cbg.all
+	#pm
+
+
+
+mort.all <- c('mortality.cbg.all', 'mortality.co.all', 'mortality.ct.all')
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.all.all*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.all.all.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.all.all.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.all.all.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.all)){
+			print(mort.all[k])
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,mort.all[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.pm.RR.all.all.',mort.all[k],'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+
+
+
+
+
+
+# 5
+pm.RR.65.all <- log(1.084/10)			#PM2.5	All-cause mortality		Ages 65 to 99 years.	(Di et al. 2017)
+	#mortality.cbg.65
+	#mortality.co.65
+	#mortality.ct.65
+	#bay.pop.65
+	#pm
+
+
+mort.65 <- c('mortality.cbg.65', 'mortality.co.65', 'mortality.ct.65')
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.65.all*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.65.all.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.65.all.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.65.all.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.65)){
+			print(mort.65[k])
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,mort.65[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.no2.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.no2.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.no2.RR.65.all.',mort.65[k],'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop.65,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	
+
+
+# 6
+
+pm.RR.all.all.lep <- log(1.14/10)			#PM2.5	All-cause mortality		All-ages	(Lepuele et al. 2012)
+	#mortality.co.all
+	#mortality.ct.all
+	#mortality.cbg.all
+	#pm
+
+
+
+mort.all <- c('mortality.cbg.all', 'mortality.co.all', 'mortality.ct.all')
+
+		a = raster(paste(concs,pm,'.tif',sep=''))
+		af <- (1-exp(-pm.RR.all.all.lep*a))
+
+		fa = paste0('/home/vtinney/results/diff/pm/af.ala.pm.RR.all.all.lep.',pm,'.tif',sep='')
+		fb = paste0('/home/vtinney/results/diff/pm/af.bay.pm.RR.all.all.lep.',pm,'.tif',sep='')
+		fo = paste0('/home/vtinney/results/diff/pm/af.oak.pm.RR.all.all.lep.',pm,'.tif',sep='')
+	
+		af.ala <- crop(af, ala)
+		af.ala <- mask(af.ala, ala)
+
+		af.oak <- crop(af, oak)
+		af.oak <- mask(af.oak, oak)
+
+		af.bay <- crop(af, bay)
+		af.bay <- mask(af.bay, bay)
+
+		writeRaster(af.ala, fa, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.oak, fo, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		writeRaster(af.bay, fb, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+		for (k in 1:length(mort.all)){
+			print(mort.all[k])
+			f1 = paste0('/home/vtinney/results/diff/pm/mort.risk.ala.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+			f2 = paste0('/home/vtinney/results/diff/pm/mort.risk.oak.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+			f3 = paste0('/home/vtinney/results/diff/pm/mort.risk.bay.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+
+			b = raster(paste(rates,mort.all[k],'.tif',sep=''))
+			risk <- af*b*(10^-4)
+
+			risk.ala <- crop(risk, ala)
+			risk.ala <- mask(risk.ala, ala)
+
+			risk.oak <- crop(risk, oak)
+			risk.oak <- mask(risk.oak, oak)
+
+			risk.bay <- crop(risk, bay)
+			risk.bay <- mask(risk.bay, bay)
+
+			writeRaster(risk.ala, f1, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.oak, f2, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+			writeRaster(risk.bay, f3, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		
+				f4 = paste0('/home/vtinney/results/diff/pm/hia.ala.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+				f5 = paste0('/home/vtinney/results/diff/pm/hia.oak.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+				f6 = paste0('/home/vtinney/results/diff/pm/hia.bay.pm.RR.all.all.lep.',mort.all[k],'.',pm,'.tif',sep='')
+
+				c = raster(paste(pops,bay.pop,'.tif',sep=''))
+				hia <- risk*c
+
+				hia.ala <- crop(hia, ala)
+				hia.ala <- mask(hia.ala, ala)
+
+				hia.oak <- crop(hia, oak)
+				hia.oak <- mask(hia.oak, oak)
+
+				hia.bay <- crop(hia, bay)
+				hia.bay <- mask(hia.bay, bay)
+
+				writeRaster(hia.ala, f4, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.oak, f5, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+				writeRaster(hia.bay, f6, format="GTiff", bylayer=TRUE, overwrite=TRUE)
+		}
+	

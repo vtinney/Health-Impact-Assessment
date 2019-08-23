@@ -1,0 +1,132 @@
+library(raster)
+library(rgdal)
+library(glue)
+library(dplyr)
+library(plyr)
+library(Rcpp)
+
+
+#Set rasters for Clip
+setwd('/home/vtinney/run/clip/')
+bay <- readOGR(dsn=getwd(), layer='bay')
+ala <- readOGR(dsn=getwd(), layer='alameda')
+oak <- readOGR(dsn=getwd(), layer='oak')
+
+
+dir <- c('/home/vtinney/results/pm/inc/paf/bay/',
+'/home/vtinney/results/no2/inc/paf/bay/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(dir[i],'crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(files[k])
+		rc <- crop(r, bay)
+    		rc <- mask(r, bay)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}
+
+dir <- c('/home/vtinney/results/pm/inc/paf/ala/',
+'/home/vtinney/results/no2/inc/paf/ala/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(dir[i],'crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(paste(files[k]))
+		rc <- crop(r, ala)
+    		rc <- mask(r, ala)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}
+
+dir <- c('/home/vtinney/results/pm/inc/paf/oak/',
+'/home/vtinney/results/no2/inc/paf/oak/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(getwd(),'/crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(paste(files[k]))
+		rc <- crop(r, oak)
+    		rc <- mask(r, oak)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}
+
+dir <- c('/home/vtinney/results/pm/inc/paf/oak/',
+'/home/vtinney/results/pm/inc/paf/ala/',
+'/home/vtinney/results/pm/inc/paf/bay/')
+
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+		p[p == 0] <- NA
+  		p.iqr <- quantile(p)
+		p.iqr <- as.matrix(p.iqr)
+		p.iqr <- t(p.iqr)
+		p.sum <- cellStats(p, 'sum')
+		p.mean <- cellStats(p, 'mean')
+		paf <- cbind(p.sum, p.mean, p.iqr)
+  	fout = paste0('/home/vtinney/results/pm/df/',files[k],'.csv',sep='')
+	write.csv(paf, fout)
+rm(p)
+}}
+
+setwd('/home/vtinney/results/pm/df/inc/')
+filenames <- list.files(path='/home/vtinney/results/pm/df/inc/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)
+	write.csv(d, "pm.results.inc.csv")
+
+dir <- c('/home/vtinney/results/no2/inc/paf/bay/',
+'/home/vtinney/results/no2/inc/paf/oak/',
+'/home/vtinney/results/no2/inc/paf/ala/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+		p[p == 0] <- NA
+  		p.iqr <- quantile(p)
+		p.iqr <- as.matrix(p.iqr)
+		p.iqr <- t(p.iqr)
+		p.sum <- cellStats(p, 'sum')
+		p.mean <- cellStats(p, 'mean')
+		paf <- cbind(p.sum, p.mean, p.iqr)
+  	fout = paste0('/home/vtinney/results/no2/df/inc/',files[k],'.csv',sep='')
+	write.csv(paf, fout)
+rm(p)
+}}
+
+setwd('/home/vtinney/results/no2/df/inc/')
+filenames <- list.files(path='/home/vtinney/results/no2/df/inc/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)
+	write.csv(d, "no2.results.inc.csv")

@@ -1,0 +1,41 @@
+# NO2 re-do data frames
+
+library(raster)
+library(rgdal)
+library(glue)
+library(dplyr)
+library(Rcpp)
+library(plyr)
+
+
+dir <- c('/home/vtinney/run/results/no2/all.cause/paf/oak/crop/',
+'/home/vtinney/run/results/no2/asthma.er/paf/oak/crop/',
+'/home/vtinney/run/results/no2/asthma.inc/paf/oak/crop/',
+'/home/vtinney/run/results/no2/cvd.mort/paf/oak/crop/')
+
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+		p[p == 0] <- NA
+  		p.iqr <- quantile(p)
+		p.iqr <- as.matrix(p.iqr)
+		p.iqr <- t(p.iqr)
+		p.sum <- cellStats(p, 'sum')
+		p.mean <- cellStats(p, 'mean')
+		paf <- cbind(p.sum, p.mean, p.iqr)
+  	fout = paste0('/home/vtinney/run/results/no2/df/',files[k],'.csv',sep='')
+	write.csv(paf, fout)
+rm(p)
+}}
+
+
+filenames <- list.files(path='/home/vtinney/run/results/no2/df/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)
+	write.csv(d, "no2.results.csv")

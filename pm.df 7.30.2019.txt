@@ -1,0 +1,68 @@
+library(raster)
+library(rgdal)
+library(glue)
+library(dplyr)
+library(plyr)
+library(Rcpp)
+
+
+#Set rasters for Clip
+setwd('/home/vtinney/clip/')
+bay <- readOGR(dsn=getwd(), layer='bay')
+ala <- readOGR(dsn=getwd(), layer='alameda')
+oak <- readOGR(dsn=getwd(), layer='oak')
+
+
+dir <- c('/home/vtinney/results/pm/all.cause/paf/bay/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(dir[i],'crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(files[k])
+		rc <- crop(r, bay)
+    		rc <- mask(r, bay)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}
+
+dir <- c('/home/vtinney/results/pm/all.cause/paf/ala/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(dir[i],'crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(paste(files[k]))
+		rc <- crop(r, ala)
+    		rc <- mask(r, ala)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}
+
+dir <- c('/home/vtinney/results/pm/all.cause/paf/oak/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	outpath <- paste0(getwd(),'/crop/',sep='')
+
+	for(k in 1:length(files)) {
+    		r <-raster(paste(files[k]))
+		rc <- crop(r, oak)
+    		rc <- mask(r, oak)
+		outfiles <- paste0(outpath, files[k])
+    		rc <- writeRaster(rc, outfiles)
+    		print(files[k])
+	}
+}

@@ -1,0 +1,78 @@
+This is a script to extract the total sum of excess health endpoints
+# for all cities in the bay area -- PM
+# Author: Veronica Southerland, 7-9-2019
+# =========================================================================================
+library(raster)
+library(sp)
+library(rgdal)
+library(plyr)
+library(dplyr)
+# =========================================================================================
+# Bay
+# =========================================================================================
+dir <- c('/home/vtinney/results/pm/all.cause/paf/bay/crop/main/'),
+'/home/vtinney/results/pm/cvd.mort/paf/bay/crop/main/',
+'/home/vtinney/results/pm/asthma.er/paf/bay/crop/main/',
+'/home/vtinney/results/pm/asthma.inc/paf/bay/crop/main/',
+'/home/vtinney/results/pm/cvd.ha/paf/bay/crop/main/')
+
+setwd('/home/vtinney/clip/')
+city <- readOGR(dsn=getwd(), layer='bay_cities')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+		for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+		p = extract(p, city, fun=sum, na.rm=TRUE)
+ fout = paste0('/home/vtinney/results/pm/cities/bay/',files[k],'.csv',sep='')
+ write.csv(p, fout)
+  print(fout)
+ rm(p)
+}}
+
+	filenames <- list.files(path='/home/vtinney/results/pm/cities/bay/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)	
+	d <- as.data.frame(d)
+	setwd('/home/vtinney/results/pm/cities/bay/')
+	write.csv(d, "bay.cities.all.csv")
+
+# =========================================================================================
+# Alameda
+# =========================================================================================
+dir <- c('/home/vtinney/results/pm/all.cause/paf/ala/crop/main/')
+'/home/vtinney/results/pm/cvd.mort/paf/ala/crop/main/',
+'/home/vtinney/results/pm/asthma.er/paf/ala/crop/main/',
+'/home/vtinney/results/pm/asthma.inc/paf/ala/crop/main/',
+'/home/vtinney/results/pm/cvd.ha/paf/ala/crop/main/')
+
+
+setwd('/home/vtinney/clip/')
+city <- readOGR(dsn=getwd(), layer='ala_cities')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+		for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+  		p = extract(p, city, fun=sum, na.rm=TRUE)
+  fout = paste0('/home/vtinney/results/pm/cities/ala/',files[k],'.csv',sep='')
+  write.csv(p, fout)
+  print(fout)
+  rm(p)
+}}
+
+	filenames <- list.files(path='/home/vtinney/results/pm/cities/ala/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)
+	d <- as.data.frame(d)
+	setwd('/home/vtinney/results/pm/cities/ala/')
+	write.csv(d, "ala.cities.all.csv")
+# =========================================================================================

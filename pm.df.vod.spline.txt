@@ -1,0 +1,137 @@
+library(raster)
+library(rgdal)
+library(glue)
+library(dplyr)
+library(Rcpp)
+library(plyr)
+
+#Set rasters for Clip
+setwd('/home/vtinney/run/clip/')
+bay <- readOGR(dsn=getwd(), layer='cvdmort_county_25_99')
+ala <- readOGR(dsn=getwd(), layer='alameda')
+oak <- readOGR(dsn=getwd(), layer='oak')
+
+setwd('/home/vtinney/run/results/pm/all.cause/paf/bay/')
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/all.cause/paf/bay/crop/vod/'
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(files[i])
+		rc <- crop(r, bay)
+    		rc <- mask(r, bay)
+    		rc <- writeRaster(rc, outfiles[i])
+    		print(files[i])
+	}
+
+
+setwd('/home/vtinney/run/results/pm/all.cause/paf/ala/')
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/all.cause/paf/ala/crop/vod/'
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(files[i])
+		rc <- crop(r, ala)
+    		rc <- mask(r, ala)
+    		rc <- writeRaster(rc, outfiles[i])
+    		print(files[i])
+	}
+
+setwd('/home/vtinney/run/results/pm/all.cause/paf/oak/crop/vod/')
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/all.cause/paf/oak/crop/vod/two/'
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(files[i])
+		rc <- crop(r, oak)
+    		rc <- mask(r, oak)
+    		writeRaster(rc, outfiles[i], overwrite=TRUE)
+    		print(files[i])
+	}
+
+#===============================================================================================
+setwd('/home/vtinney/run/results/pm/cvd.mort/paf/bay/')
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/cvd.mort/paf/bay/crop/vod/'
+	dir.create(outpath)
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(files[i])
+		rc <- crop(r, bay)
+    		rc <- mask(r, bay)
+    		rc <- writeRaster(rc, outfiles[i])
+    		print(files[i])
+	}
+
+
+setwd('/home/vtinney/run/results/pm/cvd.mort/paf/ala/')
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/cvd.mort/paf/ala/crop/vod/'
+	dir.create(outpath)
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(files[i])
+		rc <- crop(r, ala)
+    		rc <- mask(r, ala)
+    		rc <- writeRaster(rc, outfiles[i])
+    		print(files[i])
+	}
+
+setwd('/home/vtinney/run/results/pm/cvd.mort/paf/oak/') # NEED TO RUN
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+
+	outpath <- '/home/vtinney/run/results/pm/cvd.mort/paf/oak/crop/vod/'
+	outfiles <- paste0(outpath, files)
+
+	for(i in 1:length(files)) {
+    		r <-raster(paste(files[i]))
+		rc <- crop(r, oak)
+    		rc <- mask(r, oak)
+    		writeRaster(rc, outfiles[i], overwrite=TRUE)
+    		print(files[i])
+	}
+#===============================================================================================
+
+dir <- c('/home/vtinney/run/results/pm/all.cause/paf/bay/crop/vod/',
+'/home/vtinney/run/results/pm/all.cause/paf/ala/crop/vod/',
+'/home/vtinney/run/results/pm/cvd.mort/paf/bay/crop/vod/',
+'/home/vtinney/run/results/pm/cvd.mort/paf/ala/crop/vod/',
+'/home/vtinney/run/results/pm/cvd.mort/paf/oak/crop/vod/',
+'/home/vtinney/run/results/pm/all.cause/paf/oak/crop/vod/')
+
+for (i in 1:length(dir)){
+	print(dir[i])
+	setwd(dir[i])
+	files <- list.files(pattern = "\\.tif*", full.names=TRUE)
+	for (k in 1:length(files)){
+		print(files[k])
+		p <- raster(paste(files[k]))
+		p[p == 0] <- NA
+  		p.iqr <- quantile(p)
+		p.iqr <- as.matrix(p.iqr)
+		p.iqr <- t(p.iqr)
+		p.sum <- cellStats(p, 'sum')
+		p.mean <- cellStats(p, 'mean')
+		paf <- cbind(p.sum, p.mean, p.iqr)
+  	fout = paste0('/home/vtinney/run/results/pm/df/',files[k],'.csv',sep='')
+	write.csv(paf, fout)
+rm(p)
+}}
+
+#=========================================================================================================
+filenames <- list.files(path='/home/vtinney/run/results/pm/df/',pattern="*.csv", full.names=TRUE)
+	dataset.names <- do.call("rbind",llply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")})) #get header names
+	dataset <- do.call("rbind",lapply(filenames,FUN=function(files){read.csv(files, header=TRUE, sep=",")}))
+	d <- cbind(dataset, dataset.names)
+	write.csv(d, "pm.results.vod.spline.csv")
+
+
